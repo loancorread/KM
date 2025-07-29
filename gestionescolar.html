@@ -196,9 +196,10 @@
                 display: block;
             }
 
-            .main-content {
+            /* Removed main-content margin-left here as it's handled by Tailwind classes */
+            /* .main-content {
                 margin-left: 0;
-            }
+            } */
         }
 
         .pulse-animation {
@@ -348,7 +349,7 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="main-content ml-80 p-8 min-h-screen" id="main-content">
+    <main class="main-content w-full md:ml-80 p-4 md:p-8 min-h-screen" id="main-content">
         <!-- Dashboard Section -->
         <section id="dashboard" class="content-section fade-in">
             <div class="mb-8">
@@ -648,7 +649,7 @@
                         </div>
                         <div class="flex items-center">
                             <i class="fas fa-balance-scale text-pink-500 mr-3"></i>
-                            <span class="text-sm">Análisis comparativo de coberturas</span>
+                            <span>Análisis comparativo de coberturas</span>
                         </div>
                     </div>
                 </div>
