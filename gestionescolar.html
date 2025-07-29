@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Integrado de Datos Educativos - Kallfü Mapu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Librerías para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f8fafc;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-toggle {
+            display: none;
+        }
+
+        .menu-item {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            margin: 4px 8px;
+        }
+
+        .menu-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateX(4px);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .dropdown-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        .dropdown-menu.open {
+            max-height: 300px;
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            color: white;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(6, 182, 212, 0.3);
+        }
+
+        .kpi-card:nth-child(2) {
+            background: linear-gradient(135deg, var(--warning), var(--secondary));
+        }
+
+        .kpi-card:nth-child(3) {
+            background: linear-gradient(135deg, var(--success), var(--accent));
+        }
+
+        .kpi-card:nth-child(4) {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .accordion-header {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .accordion-header:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .accordion-content {
+            background: linear-gradient(135deg, #fefefe, #f8fafc);
+            border-radius: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Progress Bar Styles */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #06b6d4);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 50;
+                height: 100vh;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .8;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Para mejorar la captura del PDF */
+        .pdf-content {
+            background: white;
+            color: #1f2937;
+        }
+
+        .pdf-content .kpi-card {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="sidebar-toggle fixed top-4 left-4 z-50 p-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full shadow-lg md:hidden" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed left-0 top-0 w-80 h-full p-6 z-40">
+        <div class="mb-8">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-graduation-cap text-2xl text-white"></i>
+                </div>
+                <h1 class="text-xl font-bold text-white mb-2">Kallfü Mapu</h1>
+                <p class="text-gray-300 text-sm">Análisis Educativo</p>
+            </div>
+        </div>
+
+        <nav class="space-y-2">
+            <!-- Dashboard -->
+            <div class="menu-item active p-3 cursor-pointer" data-tab="dashboard">
+                <div class="flex items-center text-white">
+                    <i class="fas fa-chart-pie mr-3 text-lg"></i>
+                    <span class="font-medium">Dashboard</span>
+                </div>
+            </div>
+
+            <!-- Análisis Dropdown -->
+            <div>
+                <div class="menu-item p-3 cursor-pointer" onclick="toggleDropdown('analisis')">
+                    <div class="flex items-center justify-between text-gray-300 hover:text-white">
+                        <div class="flex items-center">
+                            <i class="fas fa-chart-line mr-3 text-lg"></i>
+                            <span class="font-medium">Análisis</span>
+                        </div>
+                        <i class="fas fa-chevron-down transition-transform duration-300" id="analisis-arrow"></i>
+                    </div>
+                </div>
+                <div class="dropdown-menu ml-4" id="analisis-dropdown">
+                    <div class="menu-item p-2 cursor-pointer" data-tab="hallazgos">
+                        <div class="flex items-center text-gray-400 hover:text-white">
+                            <i class="fas fa-search mr-3"></i>
+                            <span>Hallazgos Clave</span>
+                        </div>
+                    </div>
+                    <div class="menu-item p-2 cursor-pointer" data-tab="reflexion">
+                        <div class="flex items-center text-gray-400 hover:text-white">
+                            <i class="fas fa-lightbulb mr-3"></i>
+                            <span>Reflexión Crítica</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recursos -->
+            <div class="menu-item p-3 cursor-pointer" data-tab="metadatos">
+                <div class="flex items-center text-gray-300 hover:text-white">
+                    <i class="fas fa-database mr-3 text-lg"></i>
+                    <span class="font-medium">Metadatos</span>
+                </div>
+            </div>
+
+            <!-- Configuración Dropdown -->
+            <div>
+                <div class="menu-item p-3 cursor-pointer" onclick="toggleDropdown('config')">
+                    <div class="flex items-center justify-between text-gray-300 hover:text-white">
+                        <div class="flex items-center">
+                            <i class="fas fa-cog mr-3 text-lg"></i>
+                            <span class="font-medium">Configuración</span>
+                        </div>
+                        <i class="fas fa-chevron-down transition-transform duration-300" id="config-arrow"></i>
+                    </div>
+                </div>
+                <div class="dropdown-menu ml-4" id="config-dropdown">
+                    <div class="menu-item p-2 cursor-pointer" onclick="generatePDF()">
+                        <div class="flex items-center text-gray-400 hover:text-white">
+                            <i class="fas fa-download mr-3"></i>
+                            <span>Descargar PDF</span>
+                        </div>
+                    </div>
+                    <div class="menu-item p-2 cursor-pointer" onclick="shareReport()">
+                        <div class="flex items-center text-gray-400 hover:text-white">
+                            <i class="fas fa-share mr-3"></i>
+                            <span>Compartir</span>
+                        </div>
+                    </div>
+                    <div class="menu-item p-2 cursor-pointer" onclick="exportData()">
+                        <div class="flex items-center text-gray-400 hover:text-white">
+                            <i class="fas fa-file-export mr-3"></i>
+                            <span>Exportar Datos</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="absolute bottom-6 left-6 right-6">
+            <div class="text-center text-gray-400 text-xs">
+                <p>&copy; 2025 Kallfü Mapu</p>
+                <p class="mt-1">Versión 2.0</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content ml-80 p-8 min-h-screen" id="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section fade-in">
+            <div class="mb-8">
+                <h2 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                    Dashboard General
+                </h2>
+                <p class="text-gray-600 text-lg">Visión integral de los indicadores educativos</p>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+                <div class="kpi-card p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <i class="fas fa-heart text-3xl opacity-80"></i>
+                        <span class="text-2xl font-bold pulse-animation">78%</span>
+                    </div>
+                    <h3 class="font-semibold mb-1">Plan Convivencia</h3>
+                    <p class="text-sm opacity-90">Avance del plan</p>
+                </div>
+
+                <div class="kpi-card p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <i class="fas fa-exclamation-triangle text-3xl opacity-80"></i>
+                        <span class="text-2xl font-bold pulse-animation">152</span>
+                    </div>
+                    <h3 class="font-semibold mb-1">Riesgo Repitencia</h3>
+                    <p class="text-sm opacity-90">Estudiantes en riesgo</p>
+                </div>
+
+                <div class="kpi-card p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <i class="fas fa-book-open text-3xl opacity-80"></i>
+                        <span class="text-2xl font-bold pulse-animation">90%</span>
+                    </div>
+                    <h3 class="font-semibold mb-1">Estudiantes Lectores</h3>
+                    <p class="text-sm opacity-90">1° a 8° Básico</p>
+                </div>
+
+                <div class="kpi-card p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <i class="fas fa-users text-3xl opacity-80"></i>
+                        <span class="text-2xl font-bold pulse-animation">349</span>
+                    </div>
+                    <h3 class="font-semibold mb-1">Matrícula Final</h3>
+                    <p class="text-sm opacity-90">Total estudiantes</p>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+                <div class="card p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-book text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">Lectores vs No Lectores</h3>
+                            <p class="text-gray-600">Distribución de estudiantes</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="lectoresChart" style="height: 300px;"></canvas>
+                    </div>
+                    <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600 mb-2">
+                            <span class="font-semibold text-indigo-600">Fuente:</span> Informe Gestión Pedagógica
+                        </p>
+                        <p class="text-sm text-gray-700">
+                            El 90% de alfabetización indica un buen nivel general, requiriendo atención focalizada para el 10% restante.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-gradient-to-r from-red-400 to-pink-500 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-exclamation-triangle text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">Riesgo de Repitencia</h3>
+                            <p class="text-gray-600">Por criterio de evaluación</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="riesgoRepitenciaChart" style="height: 300px;"></canvas>
+                    </div>
+                    <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600 mb-2">
+                            <span class="font-semibold text-indigo-600">Fuente:</span> Informe Gestión Pedagógica
+                        </p>
+                        <p class="text-sm text-gray-700">
+                            La inasistencia crónica (94%) es el principal factor de riesgo, requiriendo estrategias de intervención centradas en asistencia.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hallazgos Clave Section -->
+        <section id="hallazgos" class="content-section hidden fade-in">
+            <div class="mb-8">
+                <h2 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                    Hallazgos Clave
+                </h2>
+                <p class="text-gray-600 text-lg">Análisis detallado de los puntos críticos identificados</p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="card p-6 border-l-4 border-red-500">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-calendar-times text-red-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">1. Inasistencia Crónica como Principal Factor de Riesgo</h3>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-lg mb-4">
+                        <p class="text-red-800 font-semibold">🚨 Dato crítico: 94% del riesgo de repitencia se debe a inasistencia</p>
+                    </div>
+                    <p class="mb-4 text-gray-700 leading-relaxed">
+                        De los 152 estudiantes identificados con riesgo de repitencia, 143 (94%) se encuentran en esta situación debido a inasistencia superior al 15%. Su asistencia media es del 73.2%, y el 100% está por debajo del 85% de asistencia.
+                    </p>
+                    <p class="mb-4 text-gray-700 leading-relaxed">
+                        Este hallazgo se correlaciona directamente con los datos de asistencia crítica, donde se registran estudiantes con porcentajes tan bajos como 6% y 22%.
+                    </p>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <p class="text-blue-800">
+                            <span class="font-semibold">💡 Implicación:</span> La repitencia no se asocia al bajo rendimiento académico, sino a la falta de asistencia, exigiendo un enfoque estratégico en la gestión de asistencia y compromiso familiar.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card p-6 border-l-4 border-yellow-500">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-heart text-yellow-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">2. Necesidad de Reforzar el Aprendizaje Socioemocional</h3>
+                    </div>
+                    <p class="mb-4 text-gray-700 leading-relaxed">
+                        La mayor cantidad de atenciones de contención emocional se concentra en el primer ciclo, pero hay limitada cobertura de temáticas formativas específicas. 1° y 2° Básico no tuvieron ninguna intervención formativa.
+                    </p>
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <p class="text-yellow-800">
+                            <span class="font-semibold">💡 Implicación:</span> Existe una brecha entre la detección de necesidades y la implementación de programas formativos preventivos en el primer ciclo.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card p-6 border-l-4 border-purple-500">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-network-wired text-purple-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">3. Impacto Multidimensional de la Inasistencia</h3>
+                    </div>
+                    <p class="mb-4 text-gray-700 leading-relaxed">
+                        La inasistencia no es solo un problema pedagógico, sino también disciplinario y de convivencia. Varios estudiantes con medidas disciplinarias también presentan inasistencia crítica.
+                    </p>
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <p class="text-purple-800">
+                            <span class="font-semibold">💡 Implicación:</span> Requiere una respuesta coordinada entre equipos de gestión pedagógica, inspectoría y convivencia escolar.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reflexión Crítica Section -->
+        <section id="reflexion" class="content-section hidden fade-in">
+            <div class="mb-8">
+                <h2 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                    Reflexión Crítica
+                </h2>
+                <p class="text-gray-600 text-lg">Análisis profundo y recomendaciones estratégicas</p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="card">
+                    <div class="accordion-header p-6 flex items-center justify-between" onclick="toggleAccordion('acc1')">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle text-2xl mr-4 text-indigo-600"></i>
+                            <h3 class="text-xl font-bold">La Inasistencia Crónica: Un Síntoma Multifactorial</h3>
+                        </div>
+                        <i class="fas fa-chevron-down transition-transform duration-300" id="acc1-arrow"></i>
+                    </div>
+                    <div class="accordion-content hidden p-6" id="acc1-content">
+                        <div class="bg-gradient-to-r from-red-50 to-pink-50 p-4 rounded-lg mb-4">
+                            <p class="text-red-800 font-medium italic">
+                                "El 94% del riesgo proviene del criterio 4; la repitencia se liga principalmente a inasistencia crónica, no al rendimiento."
+                            </p>
+                        </div>
+                        <p class="mb-4 text-gray-700 leading-relaxed">
+                            La concentración del 94% del riesgo de repitencia en la inasistencia crónica trasciende la mera gestión pedagógica. Es un síntoma de desafíos más profundos que pueden incluir factores socioeconómicos, de salud mental, dinámicas familiares o desconexión del estudiante con el entorno escolar.
+                        </p>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-blue-800 mb-3">🎯 Recomendaciones Estratégicas:</h4>
+                            <ul class="space-y-2 text-blue-700">
+                                <li class="flex items-start">
+                                    <i class="fas fa-bell text-blue-500 mt-1 mr-2"></i>
+                                    <span><strong>Protocolo de Alerta Temprana:</strong> Sistema de monitoreo diario con alertas automatizadas para intervención inmediata.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-hands-helping text-blue-500 mt-1 mr-2"></i>
+                                    <span><strong>Apoyo Psicosocial Integral:</strong> Programa de consejería individual y familiar con talleres sobre resiliencia.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-handshake text-blue-500 mt-1 mr-2"></i>
+                                    <span><strong>Alianzas Estratégicas:</strong> Fortalecer lazos con organizaciones locales para apoyo complementario.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="accordion-header p-6 flex items-center justify-between" onclick="toggleAccordion('acc2')">
+                        <div class="flex items-center">
+                            <i class="fas fa-heart text-2xl mr-4 text-pink-600"></i>
+                            <h3 class="text-xl font-bold">Coherencia entre Necesidades Socioemocionales y Acciones</h3>
+                        </div>
+                        <i class="fas fa-chevron-down transition-transform duration-300" id="acc2-arrow"></i>
+                    </div>
+                    <div class="accordion-content hidden p-6" id="acc2-content">
+                        <p class="mb-4 text-gray-700 leading-relaxed">
+                            La alta demanda de contención emocional en el primer ciclo, contrastada con la limitada implementación de intervenciones formativas, revela una desconexión preocupante entre respuesta reactiva y prevención.
+                        </p>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-green-800 mb-3">✅ Plan de Acción:</h4>
+                            <ul class="space-y-2 text-green-700">
+                                <li class="flex items-start">
+                                    <i class="fas fa-brain text-green-500 mt-1 mr-2"></i>
+                                    <span><strong>Currículo Socioemocional:</strong> Integrar formalmente el desarrollo de habilidades socioemocionales en 1° y 2° Básico.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-chalkboard-teacher text-green-500 mt-1 mr-2"></i>
+                                    <span><strong>Capacitación Docente:</strong> Formación continua en estrategias pedagógicas para bienestar emocional.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metadatos Section -->
+        <section id="metadatos" class="content-section hidden fade-in">
+            <div class="mb-8">
+                <h2 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                    Metadatos y Fuentes
+                </h2>
+                <p class="text-gray-600 text-lg">Información técnica y metodológica del análisis</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-database text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Fuentes de Datos</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <h4 class="font-semibold text-blue-700">Informe Convivencia Escolar</h4>
+                            <p class="text-sm text-gray-600">Avance del plan, acciones realizadas, atenciones y derivaciones</p>
+                        </div>
+                        <div class="border-l-4 border-green-500 pl-4">
+                            <h4 class="font-semibold text-green-700">Informe Gestión Pedagógica</h4>
+                            <p class="text-sm text-gray-600">Estudiantes en riesgo, leccionarios y desarrollo de lectura</p>
+                        </div>
+                        <div class="border-l-4 border-purple-500 pl-4">
+                            <h4 class="font-semibold text-purple-700">Informe Inspectoría General</h4>
+                            <p class="text-sm text-gray-600">Matrículas, asistencia y medidas disciplinarias</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-chart-bar text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Tratamiento Estadístico</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <i class="fas fa-percentage text-indigo-500 mr-3"></i>
+                            <span class="text-sm">Cálculo de porcentajes y proporciones</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-search text-green-500 mr-3"></i>
+                            <span class="text-sm">Identificación de patrones y correlaciones</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-layer-group text-purple-500 mr-3"></i>
+                            <span class="text-sm">Agregación y resumen de datos</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-balance-scale text-pink-500 mr-3"></i>
+                            <span class="text-sm">Análisis comparativo de coberturas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Chart data
+        const lectoresData = {
+            labels: ['Lectores', 'No Lectores'],
+            datasets: [{
+                data: [89.8, 10.2],
+                backgroundColor: [
+                    '#10b981',
+                    '#ef4444'
+                ],
+                borderWidth: 0,
+                hoverOffset: 8
+            }]
+        };
+
+        const riesgoRepitenciaData = {
+            labels: ['Bajo Desempeño', 'Calificaciones Incompletas', 'Inasistencia ≥ 15%'],
+            datasets: [{
+                data: [7, 2, 143],
+                backgroundColor: [
+                    '#3b82f6',
+                    '#f59e0b',
+                    '#ef4444'
+                ],
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        };
+
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lectores Chart
+            const lectoresCtx = document.getElementById('lectoresChart').getContext('2d');
+            new Chart(lectoresCtx, {
+                type: 'doughnut',
+                data: lectoresData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                font: {
+                                    size: 14,
+                                    weight: '600'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: 'white',
+                            bodyColor: 'white',
+                            borderColor: '#6366f1',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%',
+                }
+            });
+
+            // Riesgo Chart
+            const riesgoCtx = document.getElementById('riesgoRepitenciaChart').getContext('2d');
+            window.riesgoChart = new Chart(riesgoCtx, {
+                type: 'bar',
+                data: riesgoRepitenciaData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: 'white',
+                            bodyColor: 'white',
+                            borderColor: '#6366f1',
+                            borderWidth: 1,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                font: { weight: '600' }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: { weight: '600' }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        // Navigation functions
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id + '-dropdown');
+            const arrow = document.getElementById(id + '-arrow');
+            
+            dropdown.classList.toggle('open');
+            arrow.style.transform = dropdown.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        function toggleAccordion(id) {
+            const content = document.getElementById(id + '-content');
+            const arrow = document.getElementById(id + '-arrow');
+            
+            content.classList.toggle('hidden');
+            arrow.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+
+        // Notification system
+        function showNotification(type, title, message, duration = 5000) {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            
+            const colors = {
+                success: 'from-green-500 to-emerald-600',
+                error: 'from-red-500 to-pink-600',
+                info: 'from-blue-500 to-indigo-600',
+                warning: 'from-yellow-500 to-orange-600'
+            };
+
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle',
+                warning: 'fa-exclamation-triangle'
+            };
+
+            notification.className = `notification bg-gradient-to-r ${colors[type]} text-white p-4 rounded-lg shadow-lg max-w-sm`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${icons[type]} mr-3 text-lg"></i>
+                    <div class="flex-1">
+                        <p class="font-semibold">${title}</p>
+                        <p class="text-sm opacity-90">${message}</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-${Date.now()}"></div>
+                        </div>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            // Progress bar animation
+            const progressBar = notification.querySelector('.progress-fill');
+            let width = 100;
+            const interval = setInterval(() => {
+                width -= (100 / (duration / 100));
+                progressBar.style.width = width + '%';
+                if (width <= 0) {
+                    clearInterval(interval);
+                }
+            }, 100);
+            
+            // Auto remove
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, duration);
+        }
+
+        // PDF Generation Function
+        async function generatePDF() {
+            showNotification('info', 'Generando PDF...', 'Preparando el documento, por favor espere');
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                // Add title page
+                pdf.setFontSize(24);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Análisis Integrado de Datos Educativos', 20, 30);
+                
+                pdf.setFontSize(16);
+                pdf.setFont(undefined, 'normal');
+                pdf.text('Escuela Intercultural Kallfü Mapu', 20, 45);
+                
+                pdf.setFontSize(12);
+                pdf.text(`Generado el: ${new Date().toLocaleDateString('es-ES')}`, 20, 60);
+                
+                // Add KPI data
+                pdf.setFontSize(18);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Indicadores Clave (KPIs)', 20, 80);
+                
+                pdf.setFontSize(12);
+                pdf.setFont(undefined, 'normal');
+                pdf.text('• Plan Convivencia Escolar: 78%', 20, 95);
+                pdf.text('• Estudiantes en Riesgo de Repitencia: 152', 20, 105);
+                pdf.text('• Estudiantes Lectores (1°-8° Básico): 90%', 20, 115);
+                pdf.text('• Matrícula Final: 349', 20, 125);
+
+                // Add charts
+                showNotification('info', 'Capturando gráficos...', 'Procesando visualizaciones');
+
+                // Capture chart 1
+                const lectoresCanvas = document.getElementById('lectoresChart');
+                const lectoresImgData = lectoresCanvas.toDataURL('image/png');
+                pdf.addPage();
+                pdf.setFontSize(16);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Distribución de Estudiantes Lectores', 20, 20);
+                pdf.addImage(lectoresImgData, 'PNG', 20, 30, 160, 100);
+
+                // Capture chart 2
+                const riesgoCanvas = document.getElementById('riesgoRepitenciaChart');
+                const riesgoImgData = riesgoCanvas.toDataURL('image/png');
+                pdf.addPage();
+                pdf.setFontSize(16);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Estudiantes en Riesgo de Repitencia por Criterio', 20, 20);
+                pdf.addImage(riesgoImgData, 'PNG', 20, 30, 160, 100);
+
+                // Add hallazgos
+                pdf.addPage();
+                pdf.setFontSize(18);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Hallazgos Clave', 20, 20);
+                
+                pdf.setFontSize(14);
+                pdf.text('1. Inasistencia Crónica como Principal Factor de Riesgo', 20, 35);
+                pdf.setFontSize(10);
+                pdf.setFont(undefined, 'normal');
+                const hallazgo1Text = 'De los 152 estudiantes identificados con riesgo de repitencia, 143 (94%) se encuentran en esta situación debido a inasistencia superior al 15%. Su asistencia media es del 73.2%.';
+                const splitText1 = pdf.splitTextToSize(hallazgo1Text, 170);
+                pdf.text(splitText1, 20, 45);
+
+                pdf.setFontSize(14);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('2. Necesidad de Reforzar el Aprendizaje Socioemocional', 20, 70);
+                pdf.setFontSize(10);
+                pdf.setFont(undefined, 'normal');
+                const hallazgo2Text = 'La mayor cantidad de atenciones de contención emocional se concentra en el primer ciclo, pero hay limitada cobertura de temáticas formativas específicas.';
+                const splitText2 = pdf.splitTextToSize(hallazgo2Text, 170);
+                pdf.text(splitText2, 20, 80);
+
+                // Add metadata
+                pdf.addPage();
+                pdf.setFontSize(18);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Metadatos y Fuentes', 20, 20);
+                
+                pdf.setFontSize(12);
+                pdf.setFont(undefined, 'normal');
+                pdf.text('Fuentes de Datos:', 20, 35);
+                pdf.text('• Informe Convivencia Escolar - Kallfü Mapu', 25, 45);
+                pdf.text('• Informe Gestión Pedagógica - Kallfü Mapu', 25, 55);
+                pdf.text('• Informe Inspectoría General - Kallfü Mapu', 25, 65);
+
+                // Save PDF
+                const fileName = `Informe_Kallfu_Mapu_${new Date().toISOString().split('T')[0]}.pdf`;
+                pdf.save(fileName);
+
+                showNotification('success', '¡PDF generado exitosamente!', `El archivo ${fileName} se ha descargado`);
+
+            } catch (error) {
+                console.error('Error al generar PDF:', error);
+                showNotification('error', 'Error al generar PDF', 'Hubo un problema al crear el documento. Inténtalo de nuevo.');
+            }
+        }
+
+        // Additional functions
+        function shareReport() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Análisis Educativo - Kallfü Mapu',
+                    text: 'Informe integrado de datos educativos',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback para navegadores que no soportan Web Share API
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    showNotification('success', 'Enlace copiado', 'El enlace del informe se ha copiado al portapapeles');
+                });
+            }
+        }
+
+        function exportData() {
+            const data = {
+                kpis: {
+                    planConvivencia: '78%',
+                    riesgoRepitencia: 152,
+                    estudiantesLectores: '90%',
+                    matriculaFinal: 349
+                },
+                fechaGeneracion: new Date().toISOString(),
+                fuente: 'Escuela Intercultural Kallfü Mapu'
+            };
+
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `datos_kallfu_mapu_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+
+            showNotification('success', 'Datos exportados', 'Los datos se han exportado en formato JSON');
+        }
+
+        // Tab navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.menu-item[data-tab]');
+            const sections = document.querySelectorAll('.content-section');
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const targetTab = item.dataset.tab;
+                    
+                    // Update active states
+                    menuItems.forEach(mi => mi.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Show target section
+                    sections.forEach(section => {
+                        section.classList.add('hidden');
+                        section.classList.remove('fade-in');
+                    });
+                    
+                    const targetSection = document.getElementById(targetTab);
+                    if (targetSection) {
+                        targetSection.classList.remove('hidden');
+                        setTimeout(() => targetSection.classList.add('fade-in'), 10);
+                    }
+                    
+                    // Close sidebar on mobile
+                    if (window.innerWidth < 768) {
+                        document.getElementById('sidebar').classList.remove('open');
+                    }
+                });
+            });
+        });
+
+        // Add intersection observer for animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
