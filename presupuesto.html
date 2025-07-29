@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Financiero | Kallfu Mapu 2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --success-color: #4ade80;
+            --warning-color: #fbbf24;
+            --danger-color: #f87171;
+            --info-color: #60a5fa;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: #475569;
+            --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            border-right: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--gradient-primary);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .logo-text h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .nav-menu {
+            padding: 1.5rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            padding: 0 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            min-height: 100vh;
+            background: var(--bg-primary);
+        }
+
+        .header {
+            background: var(--gradient-primary);
+            padding: 2rem 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #ffffff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .content {
+            padding: 2.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .kpi-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .kpi-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .kpi-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+
+        .kpi-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .positive { color: var(--success-color); }
+        .negative { color: var(--danger-color); }
+        .warning { color: var(--warning-color); }
+        .info { color: var(--info-color); }
+
+        /* Section Cards */
+        .section-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 2rem 2rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .section-content {
+            padding: 2rem;
+        }
+
+        /* Charts */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 1.5rem;
+        }
+
+        .table-header {
+            padding: 1rem 1.5rem;
+            background: var(--gradient-primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.875rem;
+        }
+
+        tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        tbody tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        /* Recommendations */
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .recommendation-card {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .recommendation-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .recommendation-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .recommendation-content ul {
+            margin: 0.75rem 0;
+            padding-left: 1.25rem;
+        }
+
+        .recommendation-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Alert Box */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .alert.warning {
+            background: rgba(251, 191, 36, 0.1);
+            border-left-color: var(--warning-color);
+            color: var(--warning-color);
+        }
+
+        .alert.danger {
+            background: rgba(248, 113, 113, 0.1);
+            border-left-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .alert.info {
+            background: rgba(96, 165, 250, 0.1);
+            border-left-color: var(--info-color);
+            color: var(--info-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .content {
+                padding: 1.5rem;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Loading animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .kpi-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h2>Kallfu Mapu</h2>
+                        <p>Dashboard Financiero</p>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-section">
+                    <div class="nav-section-title">Navegación</div>
+                    <a href="#dashboard" class="nav-item active">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#ingresos" class="nav-item">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>Ingresos</span>
+                    </a>
+                    <a href="#gastos" class="nav-item">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>Gastos & Proyección</span>
+                    </a>
+                    <a href="#areas-ahorro" class="nav-item">
+                        <i class="fas fa-piggy-bank"></i>
+                        <span>Áreas de Ahorro</span>
+                    </a>
+                    <a href="#recomendaciones" class="nav-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Recomendaciones</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <div class="header-content">
+                    <h1>Informe Financiero 2025</h1>
+                    <p>Análisis integral y proyecciones financieras para la Escuela Intercultural Kallfu Mapu</p>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Dashboard KPIs -->
+                <section id="dashboard">
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <div class="kpi-title">Presupuesto Total</div>
+                                <div class="kpi-icon" style="background: rgba(102, 126, 234, 0.2); color: var(--primary-color);">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                            </div>
+                            <div class="kpi-value">$146.9M</div>
+                            <div class="kpi-description">Presupuesto aprobado para 2025</div>
+                        </div>
+
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <div class="kpi-title">Saldo Disponible</div>
+                                <div class="kpi-icon" style="background: rgba(74, 222, 128, 0.2); color: var(--success-color);">
+                                    <i class="fas fa-chart-pie"></i>
+                                </div>
+                            </div>
+                            <div class="kpi-value positive">$132.2M</div>
+                            <div class="kpi-description">Disponible para el establecimiento</div>
+                        </div>
+
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <div class="kpi-title">Ingresos a Mayo</div>
+                                <div class="kpi-icon" style="background: rgba(251, 191, 36, 0.2); color: var(--warning-color);">
+                                    <i class="fas fa-trending-up"></i>
+                                </div>
+                            </div>
+                            <div class="kpi-value warning">$62.9M</div>
+                            <div class="kpi-description">Ingresos efectivos recibidos</div>
+                        </div>
+
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <div class="kpi-title">Déficit RRHH</div>
+                                <div class="kpi-icon" style="background: rgba(248, 113, 113, 0.2); color: var(--danger-color);">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                            </div>
+                            <div class="kpi-value negative">-$9.3M</div>
+                            <div class="kpi-description">Déficit proyectado en personal</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Ingresos Section -->
+                <section id="ingresos">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-arrow-up"></i>
+                                Análisis de Ingresos 2025
+                            </h2>
+                            <p class="section-description">
+                                Distribución y evolución de los ingresos proyectados y efectivos durante el año 2025.
+                            </p>
+                        </div>
+                        
+                        <div class="section-content">
+                            <div class="chart-grid">
+                                <div class="chart-card">
+                                    <h3 class="chart-title">Comparación de Ingresos</h3>
+                                    <div class="chart-container">
+                                        <canvas id="ingresosChart"></canvas>
+                                    </div>
+                                </div>
+                                
+                                <div class="chart-card">
+                                    <h3 class="chart-title">Distribución por Fuente</h3>
+                                    <div class="chart-container">
+                                        <canvas id="fuentesChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-container">
+                                <div class="table-header">Detalle de Ingresos por Concepto (Enero-Mayo 2025)</div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Concepto de Pago</th>
+                                            <th>Enero</th>
+                                            <th>Febrero</th>
+                                            <th>Marzo</th>
+                                            <th>Abril</th>
+                                            <th>Mayo</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><strong>Subvención Normal Regular</strong></td><td>$33.4M</td><td>$34.2M</td><td>$33.4M</td><td>$35.6M</td><td>$36.1M</td><td><strong>$172.7M</strong></td></tr>
+                                        <tr><td><strong>PIE (Internado)</strong></td><td>$10.6M</td><td>$10.6M</td><td>$10.6M</td><td>$9.9M</td><td>$9.9M</td><td><strong>$51.6M</strong></td></tr>
+                                        <tr><td><strong>Subvención SEP</strong></td><td>$11.9M</td><td>$11.6M</td><td>$11.6M</td><td>$13.7M</td><td>$14.0M</td><td><strong>$62.9M</strong></td></tr>
+                                        <tr><td>SEP Prioritario</td><td>$9.3M</td><td>$9.1M</td><td>$9.1M</td><td>$10.2M</td><td>$10.5M</td><td>$48.2M</td></tr>
+                                        <tr><td>SEP Preferente</td><td>$2.6M</td><td>$2.5M</td><td>$2.5M</td><td>$3.5M</td><td>$3.5M</td><td>$14.6M</td></tr>
+                                        <tr><td><strong>Subvención Mantenimiento</strong></td><td>$7.2M</td><td>$0</td><td>$0</td><td>$0</td><td>$0</td><td><strong>$7.2M</strong></td></tr>
+                                        <tr><td>Tramo Profesional Docente</td><td>$1.0M</td><td>$1.3M</td><td>$1.8M</td><td>$2.0M</td><td>$1.9M</td><td>$8.0M</td></tr>
+                                        <tr><td>Bono Reconocimiento Profesional</td><td>$6.0M</td><td>$7.8M</td><td>$7.4M</td><td>$10.2M</td><td>$10.1M</td><td>$41.5M</td></tr>
+                                        <tr><td>Bono Desempeño Laboral</td><td>$3.1M</td><td>$3.3M</td><td>$0</td><td>$0</td><td>$0</td><td>$6.4M</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Gastos Section -->
+                <section id="gastos">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-arrow-down"></i>
+                                Análisis de Gastos y Proyección
+                            </h2>
+                            <p class="section-description">
+                                Evaluación detallada de los gastos en Recursos Humanos y Bienes y Servicios con proyecciones a diciembre 2025.
+                            </p>
+                        </div>
+
+                        <div class="section-content">
+                            <div class="alert danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <div>
+                                    <strong>Situación Crítica Detectada:</strong> El gasto en Recursos Humanos está proyectado a superar significativamente el presupuesto asignado. Se requiere implementar el plan de ajuste propuesto.
+                                </div>
+                            </div>
+
+                            <div class="chart-grid">
+                                <div class="chart-card">
+                                    <h3 class="chart-title">Recursos Humanos - Análisis Presupuestario</h3>
+                                    <div class="chart-container">
+                                        <canvas id="rrhhChart"></canvas>
+                                    </div>
+                                </div>
+                                
+                                <div class="chart-card">
+                                    <h3 class="chart-title">Bienes y Servicios - Estado Financiero</h3>
+                                    <div class="chart-container">
+                                        <canvas id="bysChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recommendations-grid">
+                                <div class="recommendation-card">
+                                    <h3 class="recommendation-title">
+                                        <i class="fas fa-users" style="color: var(--danger-color);"></i>
+                                        Recursos Humanos
+                                    </h3>
+                                    <div class="recommendation-content">
+                                        <p><strong>Situación Actual:</strong></p>
+                                        <ul>
+                                            <li>Presupuesto original (50%): $66.1M</li>
+                                            <li>Gasto acumulado a mayo: $42.4M</li>
+                                            <li>Proyección anual: $101.9M</li>
+                                            <li>Propuesta ajustada (70%): $92.6M</li>
+                                            <li><strong style="color: var(--danger-color);">Déficit proyectado: -$9.3M</strong></li>
+                                        </ul>
+                                        <p><strong>Acción Requerida:</strong> Recorte del 15.65% en gastos de RRHH para el segundo semestre.</p>
+                                    </div>
+                                </div>
+
+                                <div class="recommendation-card">
+                                    <h3 class="recommendation-title">
+                                        <i class="fas fa-box" style="color: var(--success-color);"></i>
+                                        Bienes y Servicios
+                                    </h3>
+                                    <div class="recommendation-content">
+                                        <p><strong>Situación Actual:</strong></p>
+                                        <ul>
+                                            <li>Presupuesto original (50%): $66.1M</li>
+                                            <li>Saldo de arrastre 2024: $18.5M</li>
+                                            <li>Presupuesto total disponible: $84.6M</li>
+                                            <li>Comprometido a la fecha: $39.4M</li>
+                                            <li><strong style="color: var(--success-color);">Saldo disponible: $45.2M</strong></li>
+                                        </ul>
+                                        <p><strong>Nueva asignación propuesta (30%):</strong> $39.7M con saldo saludable para nuevas compras.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Áreas de Ahorro -->
+                <section id="areas-ahorro">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-piggy-bank"></i>
+                                Oportunidades de Optimización
+                            </h2>
+                            <p class="section-description">
+                                Identificación de áreas con potencial de ahorro y optimización de recursos.
+                            </p>
+                        </div>
+
+                        <div class="section-content">
+                            <div class="recommendations-grid">
+                                <div class="recommendation-card">
+                                    <h3 class="recommendation-title">
+                                        <i class="fas fa-bolt" style="color: var(--warning-color);"></i>
+                                        Servicios Básicos ($20.5M)
+                                    </h3>
+                                    <div class="recommendation-content">
+                                        <p><strong>Composición:</strong> Electricidad ($9.1M), Agua ($5.2M), Internet ($3.3M)</p>
+                                        <p><strong>Oportunidades:</strong></p>
+                                        <ul>
+                                            <li>Implementar campañas de ahorro energético</li>
+                                            <li>Revisar contratos de telefonía e internet</li>
+                                            <li>Instalar sistemas de control automático</li>
+                                        </ul>
+                                        <p><strong>Potencial de ahorro:</strong> 10-15% ($2-3M)</p>
+                                    </div>
+                                </div>
+
+                                <div class="recommendation-card">
+                                    <h3 class="recommendation-title">
+                                        <i class="fas fa-tools" style="color: var(--info-color);"></i>
+                                        Mantenimiento ($19.1M)
+                                    </h3>
+                                    <div class="recommendation-content">
+                                        <p><strong>Enfoque principal:</strong> Mantenimiento de edificaciones ($18.5M)</p>
+                                        <p><strong>Estrategias:</strong></p>
+                                        <ul>
+                                            <li>Priorizar reparaciones críticas</li>
+                                            <li>Implementar mantenimiento preventivo</li>
+                                            <li>Solicitar múltiples cotizaciones</li>
+                                        </ul>
+                                        <p><strong>Potencial de ahorro:</strong> 15-20% ($3-4M)</p>
+                                    </div>
+                                </div>
+
+                                <div class="recommendation-card">
+                                    <h3 class="recommendation-title">
+                                        <i class="fas fa-clipboard-list" style="color: var(--accent-color);"></i>
+                                        Materiales ($15.9M)
+                                    </h3>
+                                    <div class="recommendation-content">
+                                        <p><strong>Principales rubros:</strong> Materiales de enseñanza ($8.6M), Aseo ($3.5M)</p>
+                                        <p><strong>Optimizaciones:</strong></p>
+                                        <ul>
+                                            <li>Compras centralizadas por volumen</li>
+                                            <li>Digitalización de procesos</li>
+                                            <li>Reutilización de materiales didácticos</li>
+                                        </ul>
+                                        <p><strong>Potencial de ahorro:</strong> 8-12% ($1.3-1.9M)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recomendaciones -->
+                <section id="recomendaciones">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-lightbulb"></i>
+                                Recomendaciones Estratégicas
+                            </h2>
+                            <p class="section-description">
+                                Plan de acción para garantizar la estabilidad financiera y optimizar el uso de recursos.
+                            </p>
+                        </div>
+
+                        <div class="section-content">
+                            <div class="alert info">
+                                <i class="fas fa-info-circle"></i>
+                                <div>
+                                    <strong>Plan de Saneamiento Financiero:</strong> La implementación de estas recomendaciones permitirá cerrar el año 2025 con estabilidad financiera y sentar las bases para una gestión más eficiente en 2026.
+                                </div>
+                            </div>
+
+                            <div class="recommendations-grid">
+                                <div class="recommendation-card" style="border-left-color: var(--danger-color);">
+                                    <h3 class="recommendation-title">
+                                        <i class="fas fa-exclamation-triangle" style="color: var(--danger-color);"></i>
+                                        Acción Inmediata: RRHH
+                                    </h3>
+                                    <div class="recommendation-content">
+                                        <p><strong>Prioridad:</strong> CRÍTICA</p>
+                                        <ul>
+                                            <li>Adoptar redistribución 70/30 (RRHH/BYS)</li>
+                                            <li>Implementar recorte del 15.65% junio-diciembre</li>
+                                            <li>Revisar dotación de personal no esencial</li>
+                                            <li>Renegociar contratos de honorarios</li>
+                                            <li>Controlar estrictamente horas extras</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="recommendation-card" style="border-left-color: var(--warning-color);">
+                                    <h3 class="recommendation-title">
+                                        <i class="fas fa-chart-line" style="color: var(--warning-color);"></i>
+                                        Monitoreo Continuo
+                                    </h3>
+                                    <div class="recommendation-content">
+                                        <p><strong>Frecuencia:</strong> Mensual</p>
+                                        <ul>
+                                            <li>Seguimiento de ejecución presupuestaria</li>
+                                            <li>Alertas tempranas de desviación</li>
+                                            <li>Reportes ejecutivos mensuales</li>
+                                            <li>Evaluación de indicadores financieros</li>
+                                            <li>Ajustes proactivos según proyecciones</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="recommendation-card" style="border-left-color: var(--success-color);">
+                                    <h3 class="recommendation-title">
+                                        <i class="fas fa-cogs" style="color: var(--success-color);"></i>
+                                        Optimización BYS
+                                    </h3>
+                                    <div class="recommendation-content">
+                                        <p><strong>Objetivo:</strong> Eficiencia Operativa</p>
+                                        <ul>
+                                            <li>Revisar proveedores y contratos</li>
+                                            <li>Implementar compras estratégicas</li>
+                                            <li>Optimizar consumo de servicios básicos</li>
+                                            <li>Priorizar adquisiciones esenciales</li>
+                                            <li>Explorar alternativas tecnológicas</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="recommendation-card" style="border-left-color: var(--info-color);">
+                                    <h3 class="recommendation-title">
+                                        <i class="fas fa-shield-alt" style="color: var(--info-color);"></i>
+                                        Gestión de Riesgos
+                                    </h3>
+                                    <div class="recommendation-content">
+                                        <p><strong>Enfoque:</strong> Preventivo</p>
+                                        <ul>
+                                            <li>Crear fondo de contingencia</li>
+                                            <li>Diversificar fuentes de ingresos</li>
+                                            <li>Establecer protocolos de crisis</li>
+                                            <li>Planificar escenarios alternativos</li>
+                                            <li>Fortalecer reservas financieras</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Get target section
+                const target = this.getAttribute('href');
+                if (target !== '#') {
+                    document.querySelector(target).scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Chart configurations
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#cbd5e1',
+                        font: { family: 'Inter', size: 12 }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    ticks: { color: '#94a3b8' },
+                    grid: { color: '#475569' }
+                },
+                x: {
+                    ticks: { color: '#94a3b8' },
+                    grid: { color: 'transparent' }
+                }
+            }
+        };
+
+        // Ingresos Chart
+        new Chart(document.getElementById('ingresosChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Presupuesto Total', 'Saldo Establecimiento', 'Ingresos Mayo'],
+                datasets: [{
+                    label: 'Millones CLP',
+                    data: [146.9, 132.2, 62.9],
+                    backgroundColor: ['#667eea', '#4ade80', '#fbbf24'],
+                    borderColor: ['#4f46e5', '#22c55e', '#f59e0b'],
+                    borderWidth: 1
+                }]
+            },
+            options: chartOptions
+        });
+
+        // Fuentes Chart (Pie)
+        new Chart(document.getElementById('fuentesChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Subvención Regular', 'PIE', 'SEP', 'Otros'],
+                datasets: [{
+                    data: [172.7, 51.6, 62.9, 63.2],
+                    backgroundColor: ['#667eea', '#4ade80', '#fbbf24', '#f87171'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#cbd5e1',
+                            font: { family: 'Inter', size: 11 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // RRHH Chart
+        new Chart(document.getElementById('rrhhChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Presupuesto Original', 'Gasto a Mayo', 'Proyección Anual', 'Propuesta Ajustada', 'Déficit'],
+                datasets: [{
+                    label: 'Millones CLP',
+                    data: [66.1, 42.4, 101.9, 92.6, -9.3],
+                    backgroundColor: ['#667eea', '#fbbf24', '#f87171', '#4ade80', '#ef4444'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    ...chartOptions.scales,
+                    y: {
+                        ...chartOptions.scales.y,
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+
+        // BYS Chart
+        new Chart(document.getElementById('bysChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Presupuesto Original', 'Saldo Arrastre', 'Total Disponible', 'Comprometido', 'Saldo Real'],
+                datasets: [{
+                    label: 'Millones CLP',
+                    data: [66.1, 18.5, 84.6, 39.4, 45.2],
+                    backgroundColor: ['#667eea', '#4ade80', '#764ba2', '#fbbf24', '#60a5fa'],
+                    borderWidth: 1
+                }]
+            },
+            options: chartOptions
+        });
+
+        // Add scroll effect for sections
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const sectionId = entry.target.id;
+                    document.querySelectorAll('.nav-item').forEach(nav => {
+                        nav.classList.remove('active');
+                        if (nav.getAttribute('href') === `#${sectionId}`) {
+                            nav.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section[id]').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
