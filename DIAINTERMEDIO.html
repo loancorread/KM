@@ -147,19 +147,6 @@
         .level-II { background-color: #f39c12; } /* Orange */
         .level-III { background-color: #2ecc71; } /* Green */
 
-        /* Modal styles */
-        #suggestionModal {
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        #suggestionModal.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-        #suggestionModal:not(.hidden) {
-            opacity: 1;
-            visibility: visible;
-        }
-
         /* Responsive adjustments */
         @media (max-width: 768px) {
             body {
@@ -243,9 +230,6 @@
                 <button class="tab-button active" data-area="socioemocional">Socioemocional</button>
                 <button class="tab-button" data-area="lectura">Lectura</button>
                 <button class="tab-button" data-area="matematica">Matemática</button>
-                <button id="generateSuggestionsButton" class="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition duration-300 ml-4">
-                    ✨ Obtener Sugerencias Pedagógicas
-                </button>
             </nav>
         </header>
 
@@ -273,23 +257,6 @@
             </div>
         </section>
     </main>
-
-    <!-- Modal para sugerencias pedagógicas -->
-    <div id="suggestionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white p-6 rounded-lg shadow-xl w-11/12 md:w-2/3 lg:w-1/2">
-            <h3 class="text-xl font-semibold mb-4 text-gray-800">Sugerencias Pedagógicas ✨</h3>
-            <div id="modalContent" class="text-gray-700 max-h-96 overflow-y-auto mb-4 prose">
-                <!-- Sugerencias se cargarán aquí -->
-                <div id="loadingSpinner" class="hidden flex items-center justify-center p-4">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                    <p class="ml-3 text-gray-600">Generando sugerencias...</p>
-                </div>
-            </div>
-            <div class="flex justify-end">
-                <button id="closeModalButton" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300">Cerrar</button>
-            </div>
-        </div>
-    </div>
 
     <script>
         // Datos simulados (extraídos de los PDFs)
@@ -1093,146 +1060,6 @@
         let currentArea = "lectura";
         let levelsChartInstance = null;
         let skillsChartInstance = null;
-        const apiKey = ""; // API Key para la API de Gemini
-
-        const suggestionModal = document.getElementById('suggestionModal');
-        const closeModalButton = document.getElementById('closeModalButton');
-        const modalContent = document.getElementById('modalContent');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const generateSuggestionsButton = document.getElementById('generateSuggestionsButton');
-
-        // Función para mostrar el modal
-        function showModal() {
-            suggestionModal.classList.remove('hidden');
-        }
-
-        // Función para ocultar el modal
-        function hideModal() {
-            suggestionModal.classList.add('hidden');
-        }
-
-        // Función para mostrar el spinner de carga
-        function showLoading() {
-            modalContent.innerHTML = ''; // Clear previous content
-            loadingSpinner.classList.remove('hidden');
-        }
-
-        // Función para ocultar el spinner de carga
-        function hideLoading() {
-            loadingSpinner.classList.add('hidden');
-        }
-
-        // Función para construir el prompt para la API de Gemini
-        function constructGeminiPrompt(course, area, levelsData, skillsData) {
-            let prompt = `Como un asistente pedagógico, genera 3-5 sugerencias de estrategias educativas prácticas y concretas para un docente. Estas sugerencias deben basarse en el rendimiento de los estudiantes en el curso ${course} en el área de ${area}, y deben ser aplicables en el aula para mejorar los resultados.`;
-
-            if (levelsData) {
-                prompt += `\n\nResultados generales por niveles de logro:\n`;
-                for (const level in levelsData) {
-                    prompt += `- ${level}: ${levelsData[level]}%\n`;
-                }
-            }
-
-            if (skillsData) {
-                prompt += `\n\nResultados por ejes de habilidad/temáticos (porcentaje de logro):\n`;
-                const sortedSkills = Object.entries(skillsData).sort(([, a], [, b]) => a - b);
-                for (const [skill, percentage] of sortedSkills) {
-                    let skillText = `- ${skill}: ${percentage}%`;
-                    if (area === "socioemocional" && skill === "Ansiedad académica") {
-                        skillText += ` (donde un porcentaje bajo de Respuestas Favorables indica una mayor presencia de ansiedad)`;
-                    }
-                    prompt += `${skillText}\n`;
-                }
-
-                if (sortedSkills.length > 0) {
-                    const weakestSkill = sortedSkills[0];
-                    let weakestSkillDescription = weakestSkill[0];
-                    if (area === "socioemocional" && weakestSkill[0] === "Ansiedad académica") {
-                        weakestSkillDescription += " (lo que sugiere una alta presencia de ansiedad en esta área)";
-                    }
-                    prompt += `\nPresta especial atención a las áreas con menor porcentaje de logro, como "${weakestSkillDescription}" (${weakestSkill[1]}%).`;
-                }
-            }
-
-            if (!levelsData && !skillsData) {
-                prompt += "\nActualmente no hay datos detallados de rendimiento disponibles para este curso y área. Por favor, genera sugerencias generales basadas en las mejores prácticas pedagógicas para el nivel escolar del curso y el área seleccionada.";
-            }
-
-            return prompt;
-        }
-
-        // Función para realizar llamadas a la API con retroceso exponencial
-        async function retryFetch(url, options, maxRetries = 3, initialDelay = 1000) {
-            let delay = initialDelay;
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (!response.ok) {
-                        if (response.status === 400 || response.status === 401 || response.status === 403) {
-                            throw new Error(`Error de API: ${response.status} ${response.statusText}`);
-                        }
-                        throw new Error(`La respuesta de red no fue correcta: ${response.status} ${response.statusText}`);
-                    }
-                    return response;
-                } catch (error) {
-                    console.warn(`Intento ${i + 1} fallido: ${error.message}. Reintentando en ${delay / 1000}s...`);
-                    if (i < maxRetries - 1) {
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                        delay *= 2; // Retroceso exponencial
-                    } else {
-                        throw error; // Lanzar el error después de todos los reintentos fallidos
-                    }
-                }
-            }
-        }
-
-        // Función para generar sugerencias pedagógicas usando la API de Gemini
-        async function generatePedagogicalSuggestions() {
-            showModal();
-            showLoading();
-
-            const courseData = allData[currentCourse];
-            const areaData = courseData ? courseData[currentArea] : null;
-
-            if (!areaData || (!areaData.levels && !areaData.skills)) {
-                modalContent.innerHTML = '<p class="text-center text-gray-500 py-4">No hay datos disponibles para generar sugerencias para este curso y área.</p>';
-                hideLoading();
-                return;
-            }
-
-            const prompt = constructGeminiPrompt(currentCourse, currentArea, areaData.levels, areaData.skills);
-
-            let chatHistory = [];
-            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-
-            const payload = {
-                contents: chatHistory
-            };
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-            try {
-                const response = await retryFetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    modalContent.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`; // Mostrar el texto generado
-                } else {
-                    modalContent.innerHTML = '<p class="text-red-500">No se pudieron generar sugerencias. Inténtalo de nuevo.</p>';
-                }
-            } catch (error) {
-                console.error("Error al llamar a la API de Gemini:", error);
-                modalContent.innerHTML = `<p class="text-red-500">Error al generar sugerencias: ${error.message}.</p>`;
-            } finally {
-                hideLoading();
-            }
-        }
 
         // Función para actualizar el dashboard
         function updateDashboard() {
@@ -1259,15 +1086,6 @@
                 renderStudentList(areaData.students);
             } else {
                 renderEmptyStudentList('No hay datos de estudiantes disponibles para esta área y curso.');
-            }
-
-            // Habilitar/deshabilitar el botón de sugerencias
-            if (areaData && (areaData.levels || areaData.skills)) {
-                generateSuggestionsButton.disabled = false;
-                generateSuggestionsButton.classList.remove('opacity-50', 'cursor-not-allowed');
-            } else {
-                generateSuggestionsButton.disabled = true;
-                generateSuggestionsButton.classList.add('opacity-50', 'cursor-not-allowed');
             }
         }
 
@@ -1476,12 +1294,6 @@
                 updateDashboard();
             });
         });
-
-        // Event listener para el botón de generar sugerencias
-        generateSuggestionsButton.addEventListener('click', generatePedagogicalSuggestions);
-
-        // Event listener para cerrar el modal
-        closeModalButton.addEventListener('click', hideModal);
 
         // Inicializar el dashboard con los datos predeterminados
         updateDashboard();
