@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEAL-SM/SUSESO Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons (CDN for easy use) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .accordion-header {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .accordion-header:hover {
+            background-color: #e2e8f0;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+            background-color: #ffffff;
+        }
+        .accordion-content.active {
+            max-height: 700px; /* Ajustado para acomodar más contenido */
+            padding: 1rem;
+        }
+        .risk-low { background-color: #d1fae5; color: #065f46; } /* Verde para riesgo bajo */
+        .risk-medium { background-color: #fffbeb; color: #9a3412; } /* Naranja para riesgo medio */
+        .risk-high { background-color: #fee2e2; color: #991b1b; } /* Rojo para riesgo alto */
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <!-- Encabezado del Dashboard -->
+        <header class="bg-white shadow-md rounded-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Dashboard CEAL-SM/SUSESO</h1>
+            <p class="text-gray-600">Visualización interactiva de los resultados del cuestionario de salud mental en el trabajo.</p>
+        </header>
+
+        <!-- Resumen Ejecutivo -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                <div class="p-3 bg-blue-100 rounded-full mr-4">
+                    <!-- Updated Icon for Risk Status (using Lucide's ShieldCheck) -->
+                    <i data-lucide="shield-check" class="w-8 h-8 text-blue-600"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700">Estado de riesgo del centro de trabajo</h2>
+                    <p id="risk-status" class="text-2xl font-bold text-green-600">Riesgo Bajo</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                <div class="p-3 bg-purple-100 rounded-full mr-4">
+                    <!-- Updated Icon for Participation Rate (using Lucide's Users) -->
+                    <i data-lucide="users" class="w-8 h-8 text-purple-600"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700">Tasa de participación</h2>
+                    <p id="participation-rate" class="text-2xl font-bold text-purple-600">66%</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filtros -->
+        <section class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Filtrar resultados por:</h2>
+            <div class="flex flex-wrap gap-4">
+                <button id="filter-general" class="px-6 py-3 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition duration-200 shadow-md">General</button>
+                <button id="filter-masculino" class="px-6 py-3 rounded-full bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300 transition duration-200 shadow-md">Masculino</button>
+                <button id="filter-femenino" class="px-6 py-3 rounded-full bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300 transition duration-200 shadow-md">Femenino</button>
+                <button id="filter-asistentes" class="px-6 py-3 rounded-full bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300 transition duration-200 shadow-md">Asistentes de la Educación</button>
+                <button id="filter-docentes" class="px-6 py-3 rounded-full bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300 transition duration-200 shadow-md">Docentes</button>
+            </div>
+        </section>
+
+        <!-- Gráfico Interactivo de Barras -->
+        <section class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Porcentaje de trabajadores por nivel de riesgo</h2>
+            <div class="relative h-96">
+                <canvas id="riskChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Secciones Desplegables (Acordeón) para cada dimensión -->
+        <section class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Dimensiones de Riesgo y Origen</h2>
+            <div id="accordion-container">
+                <!-- Los paneles del acordeón se generarán aquí con JavaScript -->
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Datos del informe CEAL-SM/SUSESO
+        const cealData = {
+            general: {
+                riskStatus: "Riesgo Bajo",
+                participationRate: "66%",
+                dimensions: [
+                    { name: "Carga de trabajo (CT)", low: 8.3, medium: 36.1, high: 55.6 },
+                    { name: "Exigencias emocionales (EM)", low: 5.6, medium: 36.1, high: 58.3 },
+                    { name: "Desarrollo profesional (DP)", low: 30.6, medium: 50.0, high: 19.4 },
+                    { name: "Reconocimiento y claridad de rol (RC)", low: 44.4, medium: 38.9, high: 16.7 },
+                    { name: "Conflicto de rol (CR)", low: 30.6, medium: 41.7, high: 27.8 },
+                    { name: "Calidad de liderazgo (QL)", low: 58.3, medium: 22.2, high: 19.4 },
+                    { name: "Compañerismo (CM)", low: 22.2, medium: 41.7, high: 36.1 },
+                    { name: "Inseguridad con las condiciones de trabajo (IT)", low: 63.9, medium: 19.4, high: 16.7 },
+                    { name: "Equilibrio trabajo y vida privada (TV)", low: 30.6, medium: 27.8, high: 41.7 },
+                    { name: "Confianza y justicia organizacional (CJ)", low: 58.3, medium: 30.6, high: 11.1 },
+                    { name: "Vulnerabilidad (VU)", low: 22.2, medium: 63.9, high: 13.9 },
+                    { name: "Violencia y acoso (VA)", low: 50.0, medium: 50.0, high: 0.0 },
+                    { name: "Salud mental (GHQ)", low: 27.8, medium: 33.3, high: 38.9 }
+                ],
+                accordionContent: {
+                    "Carga de trabajo (CT)": {
+                        definition: "Realizar una cantidad o carga de trabajo dentro de un tiempo determinado. Una carga excesiva se percibe como \"falta de tiempo\" para cumplir las tareas asignadas.",
+                        origin: "Falta de personal, estimación inadecuada de los tiempos de cada proceso de trabajo, planificación inadecuada, distribución desequilibrada de tareas entre los trabajadores/as, remuneración por metas, métodos o procesos de trabajo ineficientes, exceso de tareas de registro y control, máquinas y herramientas deficientes, materiales inadecuados o en mal estado.",
+                        highRiskQuestions: [
+                            "¿Con qué frecuencia le falta tiempo para completar sus tareas?",
+                            "¿Su carga de trabajo se distribuye de manera desigual de modo que se le acumula el trabajo?"
+                        ]
+                    },
+                    "Exigencias emocionales (EM)": {
+                        definition: "Las exigencias emocionales demandan nuestra capacidad para entender la situación de otras personas, sobre todo cuando esas personas están a su vez con emociones intensas.",
+                        origin: "Frecuente en ocupaciones que prestan servicios directos a las personas (trabajo social, justicia, salud, educación, atención de público). Se asocia con la carga de trabajo y la posibilidad de controlar los tiempos de exposición a las demandas emocionales.",
+                        highRiskQuestions: [
+                            "Como parte de su trabajo, ¿tiene que lidiar con los problemas personales de usuarios o clientes?",
+                            "Su trabajo, ¿le exige esconder sus emociones?"
+                        ]
+                    },
+                    "Desarrollo profesional (DP)": {
+                        definition: "Oportunidad y estímulo que ofrece el trabajo para que cada persona ponga en práctica los conocimientos y la experiencia que ya tiene, pero pueda también adquirir nuevos conocimientos y experiencia.",
+                        origin: "Mayor riesgo asociado a trabajos monótonos, repetitivos, sin variedad. Menor control de la tarea significa menores posibilidades de desarrollo.",
+                        highRiskQuestions: [
+                            "¿Tiene la posibilidad de adquirir nuevos conocimientos a través de su trabajo?",
+                            "Su trabajo, ¿le da la oportunidad de desarrollar sus habilidades?"
+                        ]
+                    },
+                    "Reconocimiento y claridad de rol (RC)": {
+                        definition: "Se refiere a la claridad de las tareas y responsabilidades asignadas y al reconocimiento por el trabajo realizado.",
+                        origin: "Roles mal definidos, falta de feedback, ausencia de sistemas de reconocimiento.",
+                        highRiskQuestions: ["No se especifican preguntas con mayor puntaje de riesgo para esta dimensión en el informe."]
+                    },
+                    "Conflicto de rol (CR)": {
+                        definition: "Sensación de molestia ante el tipo de tareas que estamos obligados a hacer, especialmente cuando se nos exigen tareas que son incongruentes entre sí, o que podrían hacerse de una manera diferente, o cuando creemos que no nos corresponde realizarlas.",
+                        origin: "Afrontar tareas con las que se está en desacuerdo o tareas que no corresponden al perfil de cargo, realizar dos tareas contrapuestas o incongruentes, recibir órdenes contradictorias. Frecuente cuando una persona tiene que responder ante dos jefaturas.",
+                        highRiskQuestions: [
+                            "¿Tiene que hacer tareas que usted cree que deberían hacerse de otra manera?",
+                            "¿Tiene que realizar tareas que le parecen innecesarias?"
+                        ]
+                    },
+                    "Calidad de liderazgo (QL)": {
+                        definition: "Percepción de la efectividad y el estilo de liderazgo dentro de la organización.",
+                        origin: "Falta de habilidades de liderazgo, comunicación deficiente, falta de apoyo a los equipos, microgestión.",
+                        highRiskQuestions: ["No se especifican preguntas con mayor puntaje de riesgo para esta dimensión en el informe."]
+                    },
+                    "Compañerismo (CM)": {
+                        definition: "Es la sensación de pertenecer a un equipo de trabajo conformado por personas que se apoyan y respetan mutuamente.",
+                        origin: "Ambiente laboral competitivo, falta de actividades de integración, problemas de comunicación, conflictos interpersonales no resueltos.",
+                        highRiskQuestions: ["No se especifican preguntas con mayor puntaje de riesgo para esta dimensión en el informe."]
+                    },
+                    "Inseguridad con las condiciones de trabajo (IT)": {
+                        definition: "Percepción de la estabilidad del empleo y las condiciones laborales.",
+                        origin: "Contratos precarios, reestructuraciones constantes, falta de información sobre el futuro de la empresa, condiciones físicas de trabajo inadecuadas.",
+                        highRiskQuestions: ["No se especifican preguntas con mayor puntaje de riesgo para esta dimensión en el informe."]
+                    },
+                    "Equilibrio trabajo y vida privada (TV)": {
+                        definition: "El equilibrio entre el trabajo y la vida privada es la manera en que estos dos ámbitos de nuestra vida nos permiten un desarrollo adecuado como personas, sin que una exigencia desmedida del trabajo interfiera con la vida privada.",
+                        origin: "Jornadas extensas, horarios incompatibles con la vida personal o familiar, turnos nocturnos, horarios rígidos, normas rígidas para permisos o vacaciones.",
+                        highRiskQuestions: [
+                            "¿Siente que su trabajo le consume demasiada ENERGÍA teniendo un efecto negativo en su vida privada?",
+                            "¿Siente que su trabajo le consume demasiado TIEMPO teniendo un efecto negativo en su vida privada?"
+                        ]
+                    },
+                    "Confianza y justicia organizacional (CJ)": {
+                        definition: "Percepción de equidad y transparencia en las decisiones y trato dentro de la organización.",
+                        origin: "Falta de transparencia en procesos de toma de decisiones, favoritismo, inequidad salarial o en oportunidades, comunicación deficiente.",
+                        highRiskQuestions: ["No se especifican preguntas con mayor puntaje de riesgo para esta dimensión en el informe."]
+                    },
+                    "Vulnerabilidad (VU)": {
+                        definition: "Exposición a situaciones de riesgo que pueden afectar la salud o seguridad de los trabajadores.",
+                        origin: "Falta de equipos de protección, procedimientos de seguridad inadecuados, exposición a sustancias peligrosas, ambientes de trabajo insalubres.",
+                        highRiskQuestions: ["No se especifican preguntas con mayor puntaje de riesgo para esta dimensión en el informe."]
+                    },
+                    "Violencia y acoso (VA)": {
+                        definition: "Exposición a conductas intimidatorias, ofensivas y no deseadas por las personas, que se relacionan con características de quien sufre dicha conducta tales como su apariencia física, género u orientación sexual, origen étnico, nacionalidad, creencias, etc.",
+                        origin: "La violencia y el acoso tienen una expresión gradual dentro de una continuidad de conductas, desde las más leves a las más graves. También se originan por falta de políticas claras contra el acoso, cultura organizacional permisiva, falta de canales de denuncia seguros.",
+                        highRiskQuestions: ["No se especifican preguntas con mayor puntaje de riesgo para esta dimensión en el informe."]
+                    },
+                    "Salud mental (GHQ)": {
+                        definition: "La escala de salud mental (GHQ12) es una manera de medir la salud mental de los trabajadores y trabajadoras.",
+                        origin: "Altos niveles de estrés, carga de trabajo excesiva, falta de apoyo social en el trabajo, conflictos laborales, desequilibrio entre vida laboral y personal, exposición a violencia o acoso.",
+                        highRiskQuestions: ["No se especifican preguntas con mayor puntaje de riesgo para esta dimensión en el informe."]
+                    }
+                }
+            },
+            masculino: {
+                riskStatus: "Nivel de Riesgo Medio", // Ejemplo, este dato no está explícitamente en el PDF para este filtro, se asume un valor representativo.
+                participationRate: "22.2%", // Corresponde al 8 de 36 hombres
+                dimensions: [
+                    { name: "Carga de trabajo (CT)", low: 12.5, medium: 25.0, high: 62.5 }, // Datos ficticios para ejemplo
+                    { name: "Exigencias emocionales (EM)", low: 0.0, medium: 37.5, high: 62.5 },
+                    { name: "Desarrollo profesional (DP)", low: 50.0, medium: 37.5, high: 12.5 },
+                    { name: "Reconocimiento y claridad de rol (RC)", low: 62.5, medium: 25.0, high: 12.5 },
+                    { name: "Conflicto de rol (CR)", low: 25.0, medium: 50.0, high: 25.0 },
+                    { name: "Calidad de liderazgo (QL)", low: 75.0, medium: 12.5, high: 12.5 },
+                    { name: "Compañerismo (CM)", low: 37.5, medium: 37.5, high: 25.0 },
+                    { name: "Inseguridad con las condiciones de trabajo (IT)", low: 75.0, medium: 12.5, high: 12.5 },
+                    { name: "Equilibrio trabajo y vida privada (TV)", low: 25.0, medium: 25.0, high: 50.0 },
+                    { name: "Confianza y justicia organizacional (CJ)", low: 75.0, medium: 25.0, high: 0.0 },
+                    { name: "Vulnerabilidad (VU)", low: 12.5, medium: 75.0, high: 12.5 },
+                    { name: "Violencia y acoso (VA)", low: 62.5, medium: 37.5, high: 0.0 },
+                    { name: "Salud mental (GHQ)", low: 25.0, medium: 37.5, high: 37.5 }
+                ]
+            },
+            femenino: {
+                riskStatus: "Nivel de Riesgo Medio", // Ejemplo
+                participationRate: "75.0%", // Corresponde al 27 de 36 mujeres
+                dimensions: [
+                    { name: "Carga de trabajo (CT)", low: 7.4, medium: 37.0, high: 55.6 }, // Datos ficticios para ejemplo
+                    { name: "Exigencias emocionales (EM)", low: 3.7, medium: 37.0, high: 59.3 },
+                    { name: "Desarrollo profesional (DP)", low: 29.6, medium: 51.9, high: 18.5 },
+                    { name: "Reconocimiento y claridad de rol (RC)", low: 40.7, medium: 40.7, high: 18.5 },
+                    { name: "Conflicto de rol (CR)", low: 29.6, medium: 40.7, high: 29.6 },
+                    { name: "Calidad de liderazgo (QL)", low: 55.6, medium: 25.9, high: 18.5 },
+                    { name: "Compañerismo (CM)", low: 18.5, medium: 44.4, high: 37.0 },
+                    { name: "Inseguridad con las condiciones de trabajo (IT)", low: 63.0, medium: 18.5, high: 18.5 },
+                    { name: "Equilibrio trabajo y vida privada (TV)", low: 29.6, medium: 25.9, high: 44.4 },
+                    { name: "Confianza y justicia organizacional (CJ)", low: 55.6, medium: 33.3, high: 11.1 },
+                    { name: "Vulnerabilidad (VU)", low: 22.2, medium: 63.0, high: 14.8 },
+                    { name: "Violencia y acoso (VA)", low: 51.9, medium: 48.1, high: 0.0 },
+                    { name: "Salud mental (GHQ)", low: 29.6, medium: 29.6, high: 40.7 }
+                ]
+            },
+            asistentes: {
+                riskStatus: "Nivel de Riesgo Bajo", // Ejemplo
+                participationRate: "16/36", // Corresponde al 16 de 36 asistentes de la educación
+                dimensions: [
+                    { name: "Carga de trabajo (CT)", low: 6.3, medium: 43.8, high: 50.0 }, // Datos ficticios para ejemplo
+                    { name: "Exigencias emocionales (EM)", low: 0.0, medium: 31.3, high: 68.8 },
+                    { name: "Desarrollo profesional (DP)", low: 25.0, medium: 56.3, high: 18.8 },
+                    { name: "Reconocimiento y claridad de rol (RC)", low: 37.5, medium: 43.8, high: 18.8 },
+                    { name: "Conflicto de rol (CR)", low: 31.3, medium: 37.5, high: 31.3 },
+                    { name: "Calidad de liderazgo (QL)", low: 50.0, medium: 31.3, high: 18.8 },
+                    { name: "Compañerismo (CM)", low: 18.8, medium: 43.8, high: 37.5 },
+                    { name: "Inseguridad con las condiciones de trabajo (IT)", low: 56.3, medium: 25.0, high: 18.8 },
+                    { name: "Equilibrio trabajo y vida privada (TV)", low: 25.0, medium: 31.3, high: 43.8 },
+                    { name: "Confianza y justicia organizacional (CJ)", low: 56.3, medium: 31.3, high: 12.5 },
+                    { name: "Vulnerabilidad (VU)", low: 18.8, medium: 68.8, high: 12.5 },
+                    { name: "Violencia y acoso (VA)", low: 56.3, medium: 43.8, high: 0.0 },
+                    { name: "Salud mental (GHQ)", low: 18.8, medium: 37.5, high: 43.8 }
+                ]
+            },
+            docentes: {
+                riskStatus: "Nivel de Riesgo Bajo", // Ejemplo
+                participationRate: "20/36", // Corresponde al 20 de 36 docentes
+                dimensions: [
+                    { name: "Carga de trabajo (CT)", low: 10.0, medium: 30.0, high: 60.0 }, // Datos ficticios para ejemplo
+                    { name: "Exigencias emocionales (EM)", low: 10.0, medium: 40.0, high: 50.0 },
+                    { name: "Desarrollo profesional (DP)", low: 35.0, medium: 45.0, high: 20.0 },
+                    { name: "Reconocimiento y claridad de rol (RC)", low: 50.0, medium: 35.0, high: 15.0 },
+                    { name: "Conflicto de rol (CR)", low: 30.0, medium: 45.0, high: 25.0 },
+                    { name: "Calidad de liderazgo (QL)", low: 65.0, medium: 15.0, high: 20.0 },
+                    { name: "Compañerismo (CM)", low: 25.0, medium: 40.0, high: 35.0 },
+                    { name: "Inseguridad con las condiciones de trabajo (IT)", low: 70.0, medium: 15.0, high: 15.0 },
+                    { name: "Equilibrio trabajo y vida privada (TV)", low: 35.0, medium: 25.0, high: 40.0 },
+                    { name: "Confianza y justicia organizacional (CJ)", low: 60.0, medium: 30.0, high: 10.0 },
+                    { name: "Vulnerabilidad (VU)", low: 25.0, medium: 60.0, high: 15.0 },
+                    { name: "Violencia y acoso (VA)", low: 45.0, medium: 55.0, high: 0.0 },
+                    { name: "Salud mental (GHQ)", low: 35.0, medium: 30.0, high: 35.0 }
+                ]
+            }
+        };
+
+        let riskChart; // Variable global para la instancia del gráfico
+
+        // Función para actualizar el resumen ejecutivo
+        function updateExecutiveSummary(data) {
+            document.getElementById('risk-status').textContent = data.riskStatus;
+            document.getElementById('participation-rate').textContent = data.participationRate;
+
+            // Actualizar color del estado de riesgo
+            const riskStatusElement = document.getElementById('risk-status');
+            riskStatusElement.classList.remove('text-green-600', 'text-yellow-600', 'text-red-600');
+            if (data.riskStatus.includes("Bajo") || data.riskStatus.includes("Óptimo")) {
+                riskStatusElement.classList.add('text-green-600');
+            } else if (data.riskStatus.includes("Medio")) {
+                riskStatusElement.classList.add('text-yellow-600'); // Considerar amarillo/naranja para medio
+            } else if (data.riskStatus.includes("Alto")) {
+                riskStatusElement.classList.add('text-red-600');
+            }
+        }
+
+        // Función para crear/actualizar el gráfico de barras
+        function updateChart(dimensionsData) {
+            const ctx = document.getElementById('riskChart').getContext('2d');
+
+            if (riskChart) {
+                riskChart.destroy(); // Destruir la instancia anterior del gráfico si existe
+            }
+
+            const labels = dimensionsData.map(d => d.name);
+            const lowRisk = dimensionsData.map(d => d.low);
+            const mediumRisk = dimensionsData.map(d => d.medium);
+            const highRisk = dimensionsData.map(d => d.high);
+
+            riskChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Riesgo Bajo (%)',
+                            data: lowRisk,
+                            backgroundColor: '#10B981', // Verde
+                            borderColor: '#047857',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Riesgo Medio (%)',
+                            data: mediumRisk,
+                            backgroundColor: '#F59E0B', // Naranja
+                            borderColor: '#B45309',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Riesgo Alto (%)',
+                            data: highRisk,
+                            backgroundColor: '#EF4444', // Rojo
+                            borderColor: '#B91C1C',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y', // Barras horizontales
+                    scales: {
+                        x: {
+                            stacked: true,
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Porcentaje (%)'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Dimensiones'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Función para generar los paneles de acordeón
+        function generateAccordionPanels(accordionContent) {
+            const container = document.getElementById('accordion-container');
+            container.innerHTML = ''; // Limpiar paneles existentes
+
+            for (const dimensionName in accordionContent) {
+                const data = accordionContent[dimensionName];
+
+                const panel = document.createElement('div');
+                panel.className = 'mb-4 border border-gray-200 rounded-lg overflow-hidden';
+
+                const header = document.createElement('div');
+                header.className = 'accordion-header bg-gray-50 p-4 font-semibold text-gray-800 flex justify-between items-center';
+                header.innerHTML = `
+                    <span>${dimensionName}</span>
+                    <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                `;
+                panel.appendChild(header);
+
+                const content = document.createElement('div');
+                content.className = 'accordion-content p-0';
+                content.innerHTML = `
+                    <div class="px-4 py-2">
+                        <h3 class="font-bold text-gray-700 mb-2">Definición:</h3>
+                        <p class="text-gray-600 mb-4">${data.definition}</p>
+                        <h3 class="font-bold text-gray-700 mb-2">Posible origen del riesgo:</h3>
+                        <p class="text-gray-600 mb-4">${data.origin}</p>
+                        ${data.highRiskQuestions && data.highRiskQuestions.length > 0 ? `
+                            <h3 class="font-bold text-gray-700 mb-2">Preguntas con puntajes de mayor riesgo:</h3>
+                            <ul class="list-disc list-inside text-gray-600">
+                                ${data.highRiskQuestions.map(item => `<li>${item}</li>`).join('')}
+                            </ul>
+                        ` : ''}
+                    </div>
+                `;
+                panel.appendChild(content);
+                container.appendChild(panel);
+
+                header.addEventListener('click', () => {
+                    const isActive = content.classList.toggle('active');
+                    const icon = header.querySelector('svg');
+                    if (isActive) {
+                        icon.classList.add('rotate-180');
+                    } else {
+                        icon.classList.remove('rotate-180');
+                    }
+                });
+            }
+        }
+
+        // Función para manejar el cambio de filtro
+        function applyFilter(filterType) {
+            const data = cealData[filterType];
+            updateExecutiveSummary(data);
+            updateChart(data.dimensions);
+            // Los paneles de acordeón siempre usan contenido general
+            generateAccordionPanels(cealData.general.accordionContent); 
+
+            // Actualizar estilo de los botones de filtro
+            document.querySelectorAll('button[id^="filter-"]').forEach(button => {
+                button.classList.remove('bg-blue-600', 'text-white');
+                button.classList.add('bg-gray-200', 'text-gray-800');
+            });
+            document.getElementById(`filter-${filterType}`).classList.remove('bg-gray-200', 'text-gray-800');
+            document.getElementById(`filter-${filterType}`).classList.add('bg-blue-600', 'text-white');
+        }
+
+        // Event Listeners para los filtros
+        document.getElementById('filter-general').addEventListener('click', () => applyFilter('general'));
+        document.getElementById('filter-masculino').addEventListener('click', () => applyFilter('masculino'));
+        document.getElementById('filter-femenino').addEventListener('click', () => applyFilter('femenino'));
+        document.getElementById('filter-asistentes').addEventListener('click', () => applyFilter('asistentes'));
+        document.getElementById('filter-docentes').addEventListener('click', () => applyFilter('docentes'));
+
+        // Inicializar el dashboard con los datos generales
+        window.onload = () => {
+            applyFilter('general');
+            // Reemplazar todos los `data-lucide` con sus SVG correspondientes después de que el DOM esté cargado
+            lucide.createIcons(); 
+        };
+    </script>
+</body>
+</html>
