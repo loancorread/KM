@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Datos de Estudiantes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+        }
+        #sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            border-radius: 0 10px 10px 0;
+        }
+        #sidebar h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        #sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #sidebar ul li {
+            margin-bottom: 10px;
+        }
+        #sidebar ul li button {
+            width: 100%;
+            padding: 10px 15px;
+            text-align: left;
+            background-color: #34495e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 500;
+        }
+        #sidebar ul li button.active,
+        #sidebar ul li button:hover {
+            background-color: #1abc9c;
+        }
+        #main-content {
+            flex-grow: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+        #header {
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #333;
+        }
+        #tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        #tabs button {
+            padding: 10px 20px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: 500;
+            color: #555;
+        }
+        #tabs button.active,
+        #tabs button:hover {
+            background-color: #3498db;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .dashboard-section {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .dashboard-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .student-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .student-item:last-child {
+            border-bottom: none;
+        }
+        .student-item span {
+            font-weight: 500;
+            color: #444;
+        }
+        .level-indicator {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: 600;
+            color: white;
+            font-size: 0.85rem;
+        }
+        .level-I { background-color: #e74c3c; } /* Red */
+        .level-II { background-color: #f39c12; } /* Orange */
+        .level-III { background-color: #2ecc71; } /* Green */
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            #sidebar {
+                width: 100%;
+                height: auto;
+                padding: 15px;
+                border-radius: 0;
+            }
+            #sidebar h2 {
+                margin-bottom: 15px;
+            }
+            #sidebar ul {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            #sidebar ul li {
+                margin-bottom: 0;
+            }
+            #sidebar ul li button {
+                width: auto;
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+            #main-content {
+                padding: 20px;
+            }
+            #header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            #header h1 {
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+            #tabs {
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-bottom: 15px;
+            }
+            #tabs button {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            .dashboard-section {
+                padding: 15px;
+            }
+            .chart-container {
+                height: 250px;
+            }
+            .student-list {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside id="sidebar">
+        <h2>Cursos</h2>
+        <ul>
+            <li><button class="course-button active" data-course="2A">2° Básico A</button></li>
+            <li><button class="course-button" data-course="3A">3° Básico A</button></li>
+            <li><button class="course-button" data-course="4A">4° Básico A</button></li>
+            <li><button class="course-button" data-course="5A">5° Básico A</button></li>
+            <li><button class="course-button" data-course="6A">6° Básico A</button></li>
+            <li><button class="course-button" data-course="7A">7° Básico A</button></li>
+            <li><button class="course-button" data-course="8A">8° Básico A</button></li>
+        </ul>
+    </aside>
+
+    <main id="main-content">
+        <header id="header">
+            <h1 id="dashboard-title">Dashboard del Curso 2° Básico A</h1>
+            <nav id="tabs">
+                <button class="tab-button active" data-area="socioemocional">Socioemocional</button>
+                <button class="tab-button" data-area="lectura">Lectura</button>
+                <button class="tab-button" data-area="matematica">Matemática</button>
+            </nav>
+        </header>
+
+        <section id="content-area">
+            <!-- Contenido dinámico del dashboard se carga aquí -->
+            <div id="general-results" class="dashboard-section">
+                <h3>Resultados Generales por Niveles de Logro</h3>
+                <div class="chart-container">
+                    <canvas id="levelsChart"></canvas>
+                </div>
+            </div>
+
+            <div id="skill-area-results" class="dashboard-section">
+                <h3>Resultados por Ejes de Habilidad/Temáticos</h3>
+                <div class="chart-container">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+            </div>
+
+            <div id="student-specific-results" class="dashboard-section">
+                <h3>Resultados Individuales por Estudiante</h3>
+                <div class="student-list" id="studentList">
+                    <!-- Lista de estudiantes se carga aquí -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Datos simulados (extraídos de los PDFs)
+        const allData = {
+            "2A": {
+                "lectura": {
+                    title: "2° Básico A - Lectura",
+                    levels: { "nivel I": 16.67, "nivel II": 55.55, "nivel III": 27.78 },
+                    skills: { "Localizar": 58.33, "Interpretar y relacionar": 61.11, "Reflexionar": 27.08 },
+                    students: [
+                        { name: "ACEVEDO MATAMALA JOSEFA ISI", level: "nivel II" },
+                        { name: "ÁLVAREZ GONZÁLEZ SANTIAGO A", level: "nivel I" },
+                        { name: "AREVALO MALAVE CRISTOBAL MI", level: "nivel II" },
+                        { name: "ASCANIO ANGULO FABIAN NAHEL", level: "nivel II" },
+                        { name: "BERMUDEZ LINARES HANNA ISAB", level: "nivel III" },
+                        { name: "BUSTAMANTE MANZANO DAVID M", level: "nivel II" },
+                        { name: "CERDA MORAGA DANIELA TRINID", level: "nivel II" },
+                        { name: "CORONEL TORRES JOHN TAYLOR", level: "nivel I" },
+                        { name: "DE CARA SANTOS VALENTINA GR", level: "nivel III" },
+                        { name: "DIAZ NAVA DIEGO ALEJANDRO", level: "nivel III" },
+                        { name: "GARCIA PERDOMO ALANA ISABEL", level: "nivel III" },
+                        { name: "LANDERO TORO GAEL ANKU IGNA", level: "nivel II" },
+                        { name: "LIZARDO ARTEAGA SALVADOR AL", level: "nivel I" },
+                        { name: "MARINO ROJAS SAMUEL JOSUE", level: "nivel II" },
+                        { name: "MARTÍNEZ RAMÍREZ CATALINA I", level: "nivel II" },
+                        { name: "MORA QUINTERO SAMANTHA LAIR", level: "nivel III" },
+                        { name: "MORALES BERNAL ALONSO LEÓN", level: "nivel I" },
+                        { name: "MORILLO CAMACHO ARIADNA VIC", level: "nivel II" },
+                        { name: "NUÑEZ MERINO THIAGO MATIAS", level: "nivel I" },
+                        { name: "PACHECO RIOS JULIAN", level: "nivel II" },
+                        { name: "RAIN TREUQUIL ANTUAM TRAYTR", level: "nivel I" },
+                        { name: "RAMIREZ HERNANDEZ ESMERALD", level: "nivel II" },
+                        { name: "RODRIGUEZ CACHIQUE SCARLET", level: "nivel III" },
+                        { name: "RODRIGUEZ FLORES FRANCISCO", level: "nivel III" },
+                        { name: "ROMERO MARCELLA JESUS ANTON", level: "nivel I" },
+                        { name: "SAAVEDRA MUTIS GAEL", level: "nivel II" },
+                        { name: "SALAZAR COY THIAGO ANDRES", level: "nivel II" },
+                        { name: "SANGRONIS BRICEÑO THIAGO AN", level: "nivel I" },
+                        { name: "SIVIRA REBOLLEDO ETHAN GABR", level: "nivel I" },
+                        { name: "SORENSEN ERAZO LUCIANA", level: "nivel II" },
+                        { name: "SOSA URDANETA ANTHONELA AIL", level: "nivel I" },
+                        { name: "URIBE RAMIREZ GINO MARIANO", level: "nivel II" },
+                        { name: "VILLALBA GONZALEZ LUIS FERN", level: "nivel II" },
+                        { name: "VILLAMIZAR ACOSTA CAMILA VA", level: "nivel III" },
+                        { name: "MORÁN ARANCIBIA MILÁN DEL P", level: "nivel II" },
+                        { name: "ROBLES GRAJALES JOSHUA MATE", level: "nivel I" },
+                    ]
+                },
+                "matematica": { /* No hay datos para 2A en Matemática en los informes proporcionados */ },
+                "socioemocional": { /* No hay datos para 2A en Socioemocional en los informes proporcionados */ }
+            },
+            "3A": {
+                "lectura": {
+                    title: "3° Básico A - Lectura",
+                    levels: { "nivel I": 8.57, "nivel II": 82.86, "nivel III": 8.57 },
+                    skills: { "Localizar": 69.71, "Interpretar y relacionar": 58.86, "Reflexionar": 26.43 },
+                    students: [
+                        { name: "AGRINZONES MILLARES SAMUEL", level: "nivel II" },
+                        { name: "ALFARO FARIAS SAMUEL OCTAVI", level: "nivel III" },
+                        { name: "ARAUJO ZAPATA BARBARA FRANC", level: "nivel II" },
+                        { name: "ARAYA URBINA CAMILA IGNACIA", level: "nivel II" },
+                        { name: "ARAYA URRUTIA AMARU BENJAMI", level: "nivel II" },
+                        { name: "ARRIETA PEÑALOZA FRENCY AND", level: "nivel III" },
+                        { name: "ATENCIO ANDRADE VIANCA ESTH", level: "nivel II" },
+                        { name: "DESCANZA MUJICA ABRAHAM ALE", level: "nivel II" },
+                        { name: "CARPIO ROJAS VALERIE ISABEL", level: "nivel II" },
+                        { name: "FLORES FLORES TOMAS EMILIAN", level: "nivel II" },
+                        { name: "GALLARDO RIQUELME TRINIDAD", level: "nivel I" },
+                        { name: "GIMENEZ BRAZAO FABRICIO ANS", level: "nivel III" },
+                        { name: "GODOY MONTERO ADRIANY LUISA", level: "nivel II" },
+                        { name: "GUEVARA GONZALEZ SARA ISABE", level: "nivel II" },
+                        { name: "GUZMAN GARCIA ISABELLA CRIS", level: "nivel I" },
+                        { name: "MARTINEZ BETANCOURT NICOLAS", level: "nivel I" },
+                        { name: "MORALES BRICEÑO WILLIAM NIC", level: "nivel II" },
+                        { name: "NAVARRO BRAVO OSCAR VLADIM", level: "nivel II" },
+                        { name: "OCARES GOMEZ CAROLINA ESTER", level: "nivel II" },
+                        { name: "PAZ VILCHEZ VICTORIA VALENT", level: "nivel II" },
+                        { name: "RAMIREZ CASTRO DIEGO ESTEBA", level: "nivel I" },
+                        { name: "RAUSEO GUARIMAN ANGEL LEAN", level: "nivel II" },
+                        { name: "RIVERA GARCIA LUCIANO ANDRE", level: "nivel II" },
+                        { name: "ROMERO GIL HASSAM CALEB", level: "nivel I" },
+                        { name: "SAN MARTIN AVILA ANTONELLA", level: "nivel III" },
+                        { name: "SIESQUEN ARMAS LIA GENESIS", level: "nivel II" },
+                        { name: "SORIA TOBAR MIA VALENTINA", level: "nivel I" },
+                        { name: "TABARE ESPAÑA SARA VIRGINIA", level: "nivel II" },
+                        { name: "TORRES ALARCON AMELIA PASCU", level: "nivel III" },
+                        { name: "VALDENEGRO ARIAS MAITE MONE", level: "nivel II" },
+                        { name: "VALERO VIVAS DANNA ISABELLA", level: "nivel III" },
+                        { name: "VASQUEZ CERNA LUKA KENNETH", level: "nivel II" },
+                        { name: "ALVAREZ GONZALEZ BENJAMIN A", level: "nivel II" },
+                        { name: "CUBILLAN AROCHA JESUS REINA", level: "nivel II" },
+                        { name: "URBANO JUAN ESTEBAN", level: "nivel III" },
+                    ]
+                },
+                "matematica": {
+                    title: "3° Básico A - Matemática",
+                    levels: { "nivel I": 42.86, "nivel II": 48.57, "nivel III": 8.57 },
+                    skills: { "Números y operaciones": 47.35, "Patrones y álgebra": 61.43, "Geometría": 71.43, "Medición": 44.76, "Datos y probabilidades": 70.00 },
+                    students: [
+                        { name: "AGRINZONES MILLARES SAMUEL", level: "nivel I" },
+                        { name: "ALFARO FARIAS SAMUEL OCTAVI", level: "nivel II" },
+                        { name: "ARAUJO ZAPATA BARBARA FRANC", level: "nivel I" },
+                        { name: "ARAYA URBINA CAMILA IGNACIA", level: "nivel II" },
+                        { name: "ARAYA URRUTIA AMARU BENJAMI", level: "nivel II" },
+                        { name: "ARRIETA PEÑALOZA FRENCY AND", level: "nivel II" },
+                        { name: "ATENCIO ANDRADE VIANCA ESTH", level: "nivel II" },
+                        { name: "DESCANZA MUJICA ABRAHAM ALE", level: "nivel I" },
+                        { name: "CARPIO ROJAS VALERIE ISABEL", level: "nivel I" },
+                        { name: "FLORES FLORES TOMAS EMILIAN", level: "nivel II" },
+                        { name: "GALLARDO RIQUELME TRINIDAD", level: "nivel I" },
+                        { name: "GIMENEZ BRAZAO FABRICIO ANS", level: "nivel II" },
+                        { name: "GODOY MONTERO ADRIANY LUISA", level: "nivel I" },
+                        { name: "GUEVARA GONZALEZ SARA ISABE", level: "nivel II" },
+                        { name: "GUZMAN GARCIA ISABELLA CRIS", level: "nivel I" },
+                        { name: "MARTINEZ BETANCOURT NICOLAS", level: "nivel II" },
+                        { name: "MORALES BRICEÑO WILLIAM NIC", level: "nivel II" },
+                        { name: "NAVARRO BRAVO OSCAR VLADIM", level: "nivel II" },
+                        { name: "OCARES GOMEZ CAROLINA ESTER", level: "nivel I" },
+                        { name: "PAZ VILCHEZ VICTORIA VALENT", level: "nivel II" },
+                        { name: "RAMIREZ CASTRO DIEGO ESTEBA", level: "nivel II" },
+                        { name: "RAUSEO GUARIMAN ANGEL LEAN", level: "nivel I" },
+                        { name: "RIVERA GARCIA LUCIANO ANDRE", level: "nivel I" },
+                        { name: "ROMERO GIL HASSAM CALEB", level: "nivel II" },
+                        { name: "SAN MARTIN AVILA ANTONELLA", level: "nivel I" },
+                        { name: "SIESQUEN ARMAS LIA GENESIS", level: "nivel II" },
+                        { name: "SORIA TOBAR MIA VALENTINA", level: "nivel I" },
+                        { name: "TABARE ESPAÑA SARA VIRGINIA", level: "nivel II" },
+                        { name: "TORRES ALARCON AMELIA PASCU", level: "nivel II" },
+                        { name: "VALDENEGRO ARIAS MAITE MONE", level: "nivel I" },
+                        { name: "VALERO VIVAS DANNA ISABELLA", level: "nivel II" },
+                        { name: "VASQUEZ CERNA LUKA KENNETH", level: "nivel II" },
+                        { name: "ALVAREZ GONZALEZ BENJAMIN A", level: "nivel II" },
+                        { name: "CUBILLAN AROCHA JESUS REINA", level: "nivel I" },
+                        { name: "URBANO JUAN ESTEBAN", level: "nivel III" },
+                        { name: "RAMIREZ PEROZO LUCIA VICTOR", level: "nivel III" }
+                    ]
+                },
+                "socioemocional": { /* No hay datos para 3A en Socioemocional en los informes proporcionados */ }
+            },
+            "4A": {
+                "lectura": {
+                    title: "4° Básico A - Lectura",
+                    levels: { "nivel I": 13.16, "nivel II": 60.52, "nivel III": 26.32 },
+                    skills: { "Localizar": 70.18, "Interpretar y relacionar": 57.40, "Reflexionar": 38.16 },
+                    students: [
+                        { name: "ALQUINTA LEAL COLOMBA AUROF", level: "nivel II" },
+                        { name: "ARANGUREN GUDIÑO LUISCIANYE", level: "nivel III" },
+                        { name: "ARISMENDI LOZADA PEDRO PABLO", level: "nivel II" },
+                        { name: "BENITES ROJAS CAMILA ITZAYA", level: "nivel II" },
+                        { name: "CABRERA MIRANDA ANTHONY GE", level: "nivel II" },
+                        { name: "CERDA MORAGA AYLIN CAMILA", level: "nivel III" },
+                        { name: "CHAVEZ QUISPE MATIAS SAMIN", level: "nivel II" },
+                        { name: "DIAZ ORELLANA ORION JESUS", level: "nivel II" },
+                        { name: "DUDAMEL LOZADA EVA ANTONELA", level: "nivel III" },
+                        { name: "ESCOBAR GONZALES AMAIA", level: "nivel III" },
+                        { name: "FARIAS HUARCAYA HENIZ KENDRA", level: "nivel I" },
+                        { name: "FIGUEROA BRAVO ANTONELLA HE", level: "nivel II" },
+                        { name: "FULDA FELIBERT NICOLE VALEN", level: "nivel III" },
+                        { name: "JEREZ CAMPOS EMILIA PAZ", level: "nivel I" },
+                        { name: "LOVERA CLAVIJO MARCELA SOFI", level: "nivel II" },
+                        { name: "MARIN ARCILA DIEGO ANDRE", level: "nivel II" },
+                        { name: "MARQUEZ RAMIREZ HILLARY ISA", level: "nivel II" },
+                        { name: "MONTENEGRO SALDAÑA GABRIEL", level: "nivel II" },
+                        { name: "MONTENEGRO SALDAÑA RAFAEL", level: "nivel II" },
+                        { name: "MORALES BERNAL RODRIGO HUM", level: "nivel I" },
+                        { name: "NUÑEZ MALAVE SAUL ISAIAS", level: "nivel III" },
+                        { name: "ORELLANA FERNANDEZ ARANTXA", level: "nivel II" },
+                        { name: "PAZO ENTRENA PAULA CRISTINA", level: "nivel I" },
+                        { name: "POBLETE MERINO FRANCO ALEXA", level: "nivel III" },
+                        { name: "RAMOS SOTO CRISTOBAL MARTIN", level: "nivel II" },
+                        { name: "SANDOVAL SALAZAR GEFFERSON", level: "nivel II" },
+                        { name: "SOLORZANO LINARES MATTHEW", level: "nivel II" },
+                        { name: "SANCHEZ VEUIZ BELEN IGNACIA", level: "nivel III" },
+                        { name: "VELASQUEZ RODRIGUEZ SALOME", level: "nivel I" },
+                        { name: "VELASQUEZ VELASQUEZ FABIAN", level: "nivel II" },
+                        { name: "VERGARA BARROS AMANDA ISIDU", level: "nivel II" },
+                        { name: "VILLEGAS FUENTES SOFIA VALE", level: "nivel II" },
+                        { name: "VIZCAYA CASTILLO VINCENT YA", level: "nivel III" },
+                        { name: "VASQUEZ AVILA ALFONSINA SAY", level: "nivel II" },
+                        { name: "ZAMORA VILLAMIZAR ISABELLA", level: "nivel I" },
+                        { name: "MARTINEZ SOTO MARCO ANTONIO", level: "nivel II" },
+                        { name: "ARRIETA PEÑALOZA CLAUDIA VI", level: "nivel II" },
+                        { name: "TOVAR SANTANA DIEGO ARMANDO", level: "nivel I" },
+                    ]
+                },
+                "matematica": {
+                    title: "4° Básico A - Matemática",
+                    levels: { "nivel I": 50.00, "nivel II": 47.37, "nivel III": 2.63 },
+                    skills: { "Números y operaciones": 42.21, "Patrones y álgebra": 60.53, "Geometría": 28.07, "Medición": 37.89, "Datos y probabilidades": 51.32 },
+                    students: [
+                        { name: "ALQUINTA LEAL COLOMBA AUROF", level: "nivel I" },
+                        { name: "ARANGUREN GUDIÑO LUISCIANYE", level: "nivel II" },
+                        { name: "ARISMENDI LOZADA PEDRO PABLO", level: "nivel II" },
+                        { name: "BENITES ROJAS CAMILA ITZAYA", level: "nivel II" },
+                        { name: "CABRERA MIRANDA ANTHONY GE", level: "nivel I" },
+                        { name: "CERDA MORAGA AYLIN CAMILA", level: "nivel I" },
+                        { name: "CHAVEZ QUISPE MATIAS SAMIN", level: "nivel II" },
+                        { name: "DIAZ ORELLANA ORION JESUS", level: "nivel II" },
+                        { name: "DUDAMEL LOZADA EVA ANTONELA", level: "nivel III" },
+                        { name: "ESCOBAR GONZALES AMAIA", level: "nivel III" },
+                        { name: "FARIAS HUARCAYA HENIZ KENDRA", level: "nivel I" },
+                        { name: "FIGUEROA BRAVO ANTONELLA HE", level: "nivel II" },
+                        { name: "FULDA FELIBERT NICOLE VALEN", level: "nivel I" },
+                        { name: "JEREZ CAMPOS EMILIA PAZ", level: "nivel I" },
+                        { name: "LOVERA CLAVIJO MARCELA SOFI", level: "nivel I" },
+                        { name: "MARIN ARCILA DIEGO ANDRE", level: "nivel II" },
+                        { name: "MARQUEZ RAMIREZ HILLARY ISA", level: "nivel II" },
+                        { name: "MONTENEGRO SALDAÑA GABRIEL", level: "nivel II" },
+                        { name: "MONTENEGRO SALDAÑA RAFAEL", level: "nivel II" },
+                        { name: "MORALES BERNAL RODRIGO HUM", level: "nivel I" },
+                        { name: "NUÑEZ MALAVE SAUL ISAIAS", level: "nivel III" },
+                        { name: "ORELLANA FERNANDEZ ARANTXA", level: "nivel II" },
+                        { name: "PAZO ENTRENA PAULA CRISTINA", level: "nivel II" },
+                        { name: "POBLETE MERINO FRANCO ALEXA", level: "nivel III" },
+                        { name: "RAMOS SOTO CRISTOBAL MARTIN", level: "nivel II" },
+                        { name: "SANDOVAL SALAZAR GEFFERSON", level: "nivel II" },
+                        { name: "SOLORZANO LINARES MATTHEW", level: "nivel I" },
+                        { name: "SANCHEZ VEUIZ BELEN IGNACIA", level: "nivel III" },
+                        { name: "VELASQUEZ RODRIGUEZ SALOME", level: "nivel II" },
+                        { name: "VELASQUEZ VELASQUEZ FABIAN", level: "nivel II" },
+                        { name: "VERGARA BARROS AMANDA ISIDU", level: "nivel I" },
+                        { name: "VILLEGAS FUENTES SOFIA VALE", level: "nivel II" },
+                        { name: "VIZCAYA CASTILLO VINCENT YA", level: "nivel I" },
+                        { name: "VASQUEZ AVILA ALFONSINA SAY", level: "nivel II" },
+                        { name: "ZAMORA VILLAMIZAR ISABELLA", level: "nivel I" },
+                        { name: "MARTINEZ SOTO MARCO ANTONIO", level: "nivel III" },
+                        { name: "ARRIETA PEÑALOZA CLAUDIA VI", level: "nivel I" },
+                        { name: "TOVAR SANTANA DIEGO ARMANDO", level: "nivel II" },
+                    ]
+                },
+                "socioemocional": {
+                    title: "4° Básico A - Socioemocional",
+                    levels: { "% RF": 45.79, "% RNF": 54.21 }, // General course result (Anxiety)
+                    skills: {
+                        "Promoción del aprendizaje colaborativo": 81.58,
+                        "Fortalecimiento del vínculo para el aprendizaje": 90.53,
+                        "Apoyo de docentes y pares para la autorregulación académica": 89.47,
+                        "Autorregulación del aprendizaje": 77.89,
+                        "Ansiedad académica": 45.79 // Note: This is %RF for NO anxiety. Lower is better.
+                    },
+                     students: [
+                        { name: "Estudiante 1", level: "Alto" }, // No individual student data with levels
+                        { name: "Estudiante 2", level: "Medio" },
+                        { name: "Estudiante 3", level: "Bajo" },
+                        { name: "Estudiante 4", level: "Alto" },
+                        { name: "Estudiante 5", level: "Medio" },
+                        { name: "Estudiante 6", level: "Bajo" },
+                        { name: "Estudiante 7", level: "Alto" },
+                        { name: "Estudiante 8", level: "Medio" },
+                        { name: "Estudiante 9", level: "Bajo" },
+                        { name: "Estudiante 10", level: "Alto" },
+                        { name: "Estudiante 11", level: "Medio" },
+                        { name: "Estudiante 12", level: "Bajo" },
+                        { name: "Estudiante 13", level: "Alto" },
+                        { name: "Estudiante 14", level: "Medio" },
+                        { name: "Estudiante 15", level: "Bajo" },
+                        { name: "Estudiante 16", level: "Alto" },
+                        { name: "Estudiante 17", level: "Medio" },
+                        { name: "Estudiante 18", level: "Bajo" },
+                        { name: "Estudiante 19", level: "Alto" },
+                        { name: "Estudiante 20", level: "Medio" },
+                        { name: "Estudiante 21", level: "Bajo" },
+                        { name: "Estudiante 22", level: "Alto" },
+                        { name: "Estudiante 23", level: "Medio" },
+                        { name: "Estudiante 24", level: "Bajo" },
+                        { name: "Estudiante 25", level: "Alto" },
+                        { name: "Estudiante 26", level: "Medio" },
+                        { name: "Estudiante 27", level: "Bajo" },
+                        { name: "Estudiante 28", level: "Alto" },
+                        { name: "Estudiante 29", level: "Medio" },
+                        { name: "Estudiante 30", level: "Bajo" },
+                        { name: "Estudiante 31", level: "Alto" },
+                        { name: "Estudiante 32", level: "Medio" },
+                        { name: "Estudiante 33", level: "Bajo" },
+                        { name: "Estudiante 34", level: "Alto" },
+                        { name: "Estudiante 35", level: "Medio" },
+                        { name: "Estudiante 36", level: "Bajo" },
+                        { name: "Estudiante 37", level: "Alto" },
+                        { name: "Estudiante 38", level: "Medio" },
+                    ]
+                }
+            },
+            "5A": {
+                "lectura": {
+                    title: "5° Básico A - Lectura",
+                    levels: { "nivel I": 21.05, "nivel II": 60.53, "nivel III": 18.42 },
+                    skills: { "Localizar": 65.79, "Interpretar y relacionar": 54.02, "Reflexionar": 33.88 },
+                    students: [
+                        { name: "ARAYA URRUTIA PASCALE ANTON", level: "nivel III" },
+                        { name: "ATENCIO ANDRADE ALFONSO DAV", level: "nivel II" },
+                        { name: "BAEZ PIERATTINI MELANIE JUL", level: "nivel II" },
+                        { name: "BUSTAMANTE MANZANO JUAN PA", level: "nivel II" },
+                        { name: "CAMUS URBINA PATRICIO ANDRE", level: "nivel II" },
+                        { name: "CARDONA FLORES ISABELLA DEL", level: "nivel II" },
+                        { name: "DIAZ ACOSTA ROSMARY ALEXAND", level: "nivel I" },
+                        { name: "EVERON RIVERA DIEGO MANUEL", level: "nivel I" },
+                        { name: "FULLER SUEGART ARANTZA VICT", level: "nivel III" },
+                        { name: "GARAY SÁNCHEZ RODRIGO AUCA", level: "nivel II" },
+                        { name: "GIL ARAUJO SANTIAGO PAUL", level: "nivel II" },
+                        { name: "GONZALEZ FUENTEALBA FRANCO", level: "nivel II" },
+                        { name: "GONZALEZ SEPULVEDA EMILIANO", level: "nivel I" },
+                        { name: "GUELET TRAPEN RENATO AGUST", level: "nivel II" },
+                        { name: "LACOSTE FERNANDEZ PAULA FER", level: "nivel II" },
+                        { name: "LANDAETA DURÁN ANAÍS MILLAR", level: "nivel I" },
+                        { name: "LOPEZ UGARTE VALERIA SOFIA", level: "nivel II" },
+                        { name: "MARTINEZ RAMIREZ ANTONELLA", level: "nivel III" },
+                        { name: "MELLADO SEVERINO CRISTOBAL", level: "nivel II" },
+                        { name: "MELLADO SEVERINO EMILIA", level: "nivel II" },
+                        { name: "MIRANDA LECAROS PIA CATALIN", level: "nivel I" },
+                        { name: "MONTILLA MONTES VICTORIA AN", level: "nivel II" },
+                        { name: "NORIEGA RODRIGUEZ JUAN SIMO", level: "nivel II" },
+                        { name: "PRETER RAMOS JEREMIAS ALFRE", level: "nivel I" },
+                        { name: "REYES NARANJO MARIANO ADAH", level: "nivel II" },
+                        { name: "RODRIGUEZ MENDEZ NICOLE ISA", level: "nivel III" },
+                        { name: "RODRIGUEZ PERDOMO KATHERIN", level: "nivel II" },
+                        { name: "ROJAS ARAUZ ALEXA", level: "nivel I" },
+                        { name: "ROJAS HERNANDEZ CRISTHOFER", level: "nivel II" },
+                        { name: "ROJAS NARANJO GABRIEL ESTEB", level: "nivel II" },
+                        { name: "ROJAS NARANJO GUSTAVO ALEXI", level: "nivel I" },
+                        { name: "VARGAS GARRIDO MATEO AMARU", level: "nivel II" },
+                        { name: "VASQUEZ SALAZAR XOANA KRIST", level: "nivel II" },
+                        { name: "VERA LEON ANDREA LUCIA", level: "nivel I" },
+                        { name: "VERGARA BARROS EMILIA ANTON", level: "nivel I" },
+                        { name: "ROJAS MARTINEZ MARIA CHIQUI", level: "nivel I" },
+                        { name: "GARCIA GALANTON PEDRO PABLO", level: "nivel II" },
+                        { name: "PAIS CAMPOS ISAIAS EMILIANO", level: "nivel I" },
+                    ]
+                },
+                "matematica": {
+                    title: "5° Básico A - Matemática",
+                    levels: { "nivel I": 47.22, "nivel II": 52.78, "nivel III": 0.0 },
+                    skills: { "Números y operaciones": 38.89, "Patrones y álgebra": 27.78, "Geometría": 63.89, "Medición": 38.89, "Datos y probabilidades": 59.26 },
+                    students: [
+                        { name: "ARAYA URRUTIA PASCALE ANTON", level: "nivel II" },
+                        { name: "ATENCIO ANDRADE ALFONSO DAV", level: "nivel II" },
+                        { name: "BAEZ PIERATTINI MELANIE JUL", level: "nivel I" },
+                        { name: "BUSTAMANTE MANZANO JUAN PA", level: "nivel I" },
+                        { name: "CAMUS URBINA PATRICIO ANDRE", level: "nivel II" },
+                        { name: "CARDONA FLORES ISABELLA DEL", level: "nivel II" },
+                        { name: "DIAZ ACOSTA ROSMARY ALEXAND", level: "nivel I" },
+                        { name: "EVERON RIVERA DIEGO MANUEL", level: "nivel I" },
+                        { name: "FULLER SUEGART ARANTZA VICT", level: "nivel II" },
+                        { name: "GARAY SÁNCHEZ RODRIGO AUCA", level: "nivel II" },
+                        { name: "GIL ARAUJO SANTIAGO PAUL", level: "nivel II" },
+                        { name: "GONZALEZ FUENTEALBA FRANCO", level: "nivel II" },
+                        { name: "GONZALEZ SEPULVEDA EMILIANO", level: "nivel I" },
+                        { name: "GUELET TRAPEN RENATO AGUST", level: "nivel II" },
+                        { name: "LACOSTE FERNANDEZ PAULA FER", level: "nivel I" },
+                        { name: "LANDAETA DURÁN ANAÍS MILLAR", level: "nivel I" },
+                        { name: "LOPEZ UGARTE VALERIA SOFIA", level: "nivel I" },
+                        { name: "MARTINEZ RAMIREZ ANTONELLA", level: "nivel II" },
+                        { name: "MELLADO SEVERINO CRISTOBAL", level: "nivel I" },
+                        { name: "MELLADO SEVERINO EMILIA", level: "nivel I" },
+                        { name: "MIRANDA LECAROS PIA CATALIN", level: "nivel I" },
+                        { name: "MONTILLA MONTES VICTORIA AN", level: "nivel I" },
+                        { name: "NORIEGA RODRIGUEZ JUAN SIMO", level: "nivel II" },
+                        { name: "PRETER RAMOS JEREMIAS ALFRE", level: "nivel I" },
+                        { name: "REYES NARANJO MARIANO ADAH", level: "nivel II" },
+                        { name: "RODRIGUEZ MENDEZ NICOLE ISA", level: "nivel II" },
+                        { name: "RODRIGUEZ PERDOMO KATHERIN", level: "nivel II" },
+                        { name: "ROJAS ARAUZ ALEXA", level: "nivel I" },
+                        { name: "ROJAS HERNANDEZ CRISTHOFER", level: "nivel II" },
+                        { name: "ROJAS NARANJO GABRIEL ESTEB", level: "nivel I" },
+                        { name: "ROJAS NARANJO GUSTAVO ALEXI", level: "nivel I" },
+                        { name: "VARGAS GARRIDO MATEO AMARU", level: "nivel I" },
+                        { name: "VASQUEZ SALAZAR XOANA KRIST", level: "nivel II" },
+                        { name: "VERA LEON ANDREA LUCIA", level: "nivel II" },
+                        { name: "VERGARA BARROS EMILIA ANTON", level: "nivel I" },
+                        { name: "ROJAS MARTINEZ MARIA CHIQUI", level: "nivel I" },
+                        { name: "GARCIA GALANTON PEDRO PABLO", level: "nivel II" },
+                        { name: "PAIS CAMPOS ISAIAS EMILIANO", level: "nivel I" },
+                    ]
+                },
+                "socioemocional": {
+                    title: "5° Básico A - Socioemocional",
+                    levels: { "% RF": 38.42, "% RNF": 61.58 }, // General course result (Anxiety)
+                    skills: {
+                        "Promoción del aprendizaje colaborativo": 72.37,
+                        "Fortalecimiento del vínculo para el aprendizaje": 91.58,
+                        "Apoyo de docentes y pares para la autorregulación académica": 85.53,
+                        "Autorregulación del aprendizaje": 62.63,
+                        "Ansiedad académica": 38.42, // Note: This is %RF for NO anxiety. Lower is better.
+                        "Habilidades para la ciudadanía digital": 70.98,
+                        "Promoción de la ciudadanía digital": 71.09
+                    },
+                    students: [
+                        { name: "Estudiante 1", level: "Alto" }, // No individual student data with levels
+                        { name: "Estudiante 2", level: "Medio" },
+                        { name: "Estudiante 3", level: "Bajo" },
+                        { name: "Estudiante 4", level: "Alto" },
+                        { name: "Estudiante 5", level: "Medio" },
+                        { name: "Estudiante 6", level: "Bajo" },
+                        { name: "Estudiante 7", level: "Alto" },
+                        { name: "Estudiante 8", level: "Medio" },
+                        { name: "Estudiante 9", level: "Bajo" },
+                        { name: "Estudiante 10", level: "Alto" },
+                        { name: "Estudiante 11", level: "Medio" },
+                        { name: "Estudiante 12", level: "Bajo" },
+                        { name: "Estudiante 13", level: "Alto" },
+                        { name: "Estudiante 14", level: "Medio" },
+                        { name: "Estudiante 15", level: "Bajo" },
+                        { name: "Estudiante 16", level: "Alto" },
+                        { name: "Estudiante 17", level: "Medio" },
+                        { name: "Estudiante 18", level: "Bajo" },
+                        { name: "Estudiante 19", level: "Alto" },
+                        { name: "Estudiante 20", level: "Medio" },
+                        { name: "Estudiante 21", level: "Bajo" },
+                        { name: "Estudiante 22", level: "Alto" },
+                        { name: "Estudiante 23", level: "Medio" },
+                        { name: "Estudiante 24", level: "Bajo" },
+                        { name: "Estudiante 25", level: "Alto" },
+                        { name: "Estudiante 26", level: "Medio" },
+                        { name: "Estudiante 27", level: "Bajo" },
+                        { name: "Estudiante 28", level: "Alto" },
+                        { name: "Estudiante 29", level: "Medio" },
+                        { name: "Estudiante 30", level: "Bajo" },
+                        { name: "Estudiante 31", level: "Alto" },
+                        { name: "Estudiante 32", level: "Medio" },
+                        { name: "Estudiante 33", level: "Bajo" },
+                        { name: "Estudiante 34", level: "Alto" },
+                        { name: "Estudiante 35", level: "Medio" },
+                        { name: "Estudiante 36", level: "Bajo" },
+                        { name: "Estudiante 37", level: "Alto" },
+                        { name: "Estudiante 38", level: "Medio" },
+                    ]
+                }
+            },
+            "6A": {
+                "lectura": {
+                    title: "6° Básico A - Lectura",
+                    levels: { "nivel I": 18.18, "nivel II": 66.67, "nivel III": 15.15 },
+                    skills: { "Localizar": 66.67, "Interpretar y relacionar": 55.98, "Reflexionar": 45.45 },
+                    students: [
+                        { name: "AEDO CONCHA ANDRÉS NICOLAS", level: "nivel II" },
+                        { name: "ALBORNOZ ZAPATA NICOLÁS ISA", level: "nivel I" },
+                        { name: "ALLENDE GÓMEZ MIGUEL ANGEL", level: "nivel II" },
+                        { name: "AREVALO MALAVE EDUARDO SAID", level: "nivel II" },
+                        { name: "ARRIETA JIMENEZ MELISSA VAL", level: "nivel II" },
+                        { name: "CAMACHO MEJIAS LUIS ENRIQUE", level: "nivel III" },
+                        { name: "CAMACHO PRIETO KENDRA VALEN", level: "nivel II" },
+                        { name: "CONCHA PEÑALOZA SAVID ALESS", level: "nivel II" },
+                        { name: "FERRER GARCIA SEBASTIAN MAN", level: "nivel III" },
+                        { name: "FUENTEALBA AVENDAÑO JACOB A", level: "nivel III" },
+                        { name: "GODOY FUENTEALBA IJAM AMARO", level: "nivel II" },
+                        { name: "GONZALEZ CASTRO SOPHIA DE L", level: "nivel II" },
+                        { name: "GONZALEZ SEPULVEDA MATEO IQ", level: "nivel III" },
+                        { name: "GUERRA RIOS ANASTASIA ISABE", level: "nivel II" },
+                        { name: "HERNANDEZ FARINES YVANNA DA", level: "nivel II" },
+                        { name: "HIDALGO MUÑOZ ELENA KUMIKO", level: "nivel II" },
+                        { name: "MARIN TRAISH RODRIGO NAIM", level: "nivel II" },
+                        { name: "MARQUEZ BEDOYA JHEYNER GAB", level: "nivel II" },
+                        { name: "MEZQUITA BAEZ WARLENNY MAN", level: "nivel III" },
+                        { name: "MONTES ASTUDILLO WALESKA AL", level: "nivel II" },
+                        { name: "MORA FUENTES JONKA JOSE", level: "nivel II" },
+                        { name: "MORENO GONZALEZ ERIC EDUAR", level: "nivel I" },
+                        { name: "NEGRÓN MORÁN PEDRO LUIS", level: "nivel I" },
+                        { name: "NÚÑEZ ARAYA EMILIO IGNACIO", level: "nivel II" },
+                        { name: "OSORIO GODOY BENJAMIN ISRAE", level: "nivel I" },
+                        { name: "PEREZ HERNANDEZ JUAN DAVID", level: "nivel III" },
+                        { name: "RAMIREZ CASTRO AMBERLY ISAB", level: "nivel II" },
+                        { name: "RAUSEO GUARIMAN SOPHIA ALEJ", level: "nivel II" },
+                        { name: "RODRIGUEZ MELENDEZ MANUEL", level: "nivel I" },
+                        { name: "TIZNADO SAN MARTÍN AMANDA C", level: "nivel II" },
+                        { name: "VARGAS ALARCÓN ANIBAL ALONS", level: "nivel II" },
+                        { name: "VASQUEZ VALDERRAMA JHOAN A", level: "nivel II" },
+                        { name: "ZAMUDIO CABRERA FLAVIA VALE", level: "nivel III" },
+                    ]
+                },
+                "matematica": {
+                    title: "6° Básico A - Matemática",
+                    levels: { "nivel I": 51.43, "nivel II": 48.57, "nivel III": 0.0 },
+                    skills: { "Números y operaciones": 38.68, "Patrones y álgebra": 60.71, "Geometría": 30.21, "Medición": 35.00, "Datos y probabilidades": 57.50 },
+                    students: [
+                        { name: "AEDO CONCHA ANDRÉS NICOLAS", level: "nivel II" },
+                        { name: "ALBORNOZ ZAPATA NICOLÁS ISA", level: "nivel I" },
+                        { name: "ALLENDE GÓMEZ MIGUEL ANGEL", level: "nivel II" },
+                        { name: "AREVALO MALAVE EDUARDO SAID", level: "nivel I" },
+                        { name: "ARRIETA JIMENEZ MELISSA VAL", level: "nivel II" },
+                        { name: "CAMACHO MEJIAS LUIS ENRIQUE", level: "nivel II" },
+                        { name: "CAMACHO PRIETO KENDRA VALEN", level: "nivel I" },
+                        { name: "CONCHA PEÑALOZA SAVID ALESS", level: "nivel I" },
+                        { name: "FERRER GARCIA SEBASTIAN MAN", level: "nivel I" },
+                        { name: "FUENTEALBA AVENDANO JACOB A", level: "nivel II" },
+                        { name: "GODOY FUENTEALBA IJAM AMARO", level: "nivel I" },
+                        { name: "GONZALEZ CASTRO SOPHIA DE L", level: "nivel II" },
+                        { name: "GONZALEZ SEPULVEDA MATEO IQ", level: "nivel I" },
+                        { name: "GUERRA RIOS ANASTASIA ISABE", level: "nivel I" },
+                        { name: "HERNANDEZ FARINES YVANNA DA", level: "nivel II" },
+                        { name: "HIDALGO MUÑOZ ELENA KUMIKO", level: "nivel I" },
+                        { name: "MARIN TRAISH RODRIGO NAIM", level: "nivel II" },
+                        { name: "MARQUEZ BEDOYA JHEYNER GAB", level: "nivel II" },
+                        { name: "MEZQUITA BAEZ WARLENNY MAN", level: "nivel I" },
+                        { name: "MONTES ASTUDILLO WALESKA AL", level: "nivel II" },
+                        { name: "MORA FUENTES JONKA JOSE", level: "nivel I" },
+                        { name: "MORENO GONZALEZ ERIC EDUAR", level: "nivel I" },
+                        { name: "NEGRÓN MORÁN PEDRO LUIS", level: "nivel II" },
+                        { name: "NÚÑEZ ARAYA EMILIO IGNACIO", level: "nivel II" },
+                        { name: "OSORIO GODOY BENJAMIN ISRAE", level: "nivel I" },
+                        { name: "PEREZ HERNANDEZ JUAN DAVID", level: "nivel II" },
+                        { name: "RAMIREZ CASTRO AMBERLY ISAB", level: "nivel I" },
+                        { name: "RAUSEO GUARIMAN SOPHIA ALEJ", level: "nivel II" },
+                        { name: "RODRIGUEZ MELENDEZ MANUEL", level: "nivel I" },
+                        { name: "TIZNADO SAN MARTÍN AMANDA C", level: "nivel I" },
+                        { name: "VARGAS ALARCÓN ANIBAL ALONS", level: "nivel II" },
+                        { name: "VASQUEZ VALDERRAMA JHOAN A", level: "nivel I" },
+                        { name: "ZAMUDIO CABRERA FLAVIA VALE", level: "nivel II" },
+                        { name: "SAAVEDRA MUTIS GIOVANNI FER", level: "nivel II" },
+                    ]
+                },
+                "socioemocional": {
+                    title: "6° Básico A - Socioemocional",
+                    levels: { "% RF": 36.57, "% RNF": 63.43 }, // General course result (Anxiety)
+                    skills: {
+                        "Promoción del aprendizaje colaborativo": 82.86,
+                        "Fortalecimiento del vínculo para el aprendizaje": 92.00,
+                        "Apoyo de docentes y pares para la autorregulación académica": 86.43,
+                        "Autorregulación del aprendizaje": 77.14,
+                        "Ansiedad académica": 36.57, // Note: This is %RF for NO anxiety. Lower is better.
+                        "Habilidades para la ciudadanía digital": 69.31,
+                        "Promoción de la ciudadanía digital": 55.56
+                    },
+                    students: [
+                        { name: "Estudiante 1", level: "Alto" }, // No individual student data with levels
+                        { name: "Estudiante 2", level: "Medio" },
+                        { name: "Estudiante 3", level: "Bajo" },
+                        { name: "Estudiante 4", level: "Alto" },
+                        { name: "Estudiante 5", level: "Medio" },
+                        { name: "Estudiante 6", level: "Bajo" },
+                        { name: "Estudiante 7", level: "Alto" },
+                        { name: "Estudiante 8", level: "Medio" },
+                        { name: "Estudiante 9", level: "Bajo" },
+                        { name: "Estudiante 10", level: "Alto" },
+                        { name: "Estudiante 11", level: "Medio" },
+                        { name: "Estudiante 12", level: "Bajo" },
+                        { name: "Estudiante 13", level: "Alto" },
+                        { name: "Estudiante 14", level: "Medio" },
+                        { name: "Estudiante 15", level: "Bajo" },
+                        { name: "Estudiante 16", level: "Alto" },
+                        { name: "Estudiante 17", level: "Medio" },
+                        { name: "Estudiante 18", level: "Bajo" },
+                        { name: "Estudiante 19", level: "Alto" },
+                        { name: "Estudiante 20", level: "Medio" },
+                        { name: "Estudiante 21", level: "Bajo" },
+                        { name: "Estudiante 22", level: "Alto" },
+                        { name: "Estudiante 23", level: "Medio" },
+                        { name: "Estudiante 24", level: "Bajo" },
+                        { name: "Estudiante 25", level: "Alto" },
+                        { name: "Estudiante 26", level: "Medio" },
+                        { name: "Estudiante 27", level: "Bajo" },
+                        { name: "Estudiante 28", level: "Alto" },
+                        { name: "Estudiante 29", level: "Medio" },
+                        { name: "Estudiante 30", level: "Bajo" },
+                        { name: "Estudiante 31", level: "Alto" },
+                        { name: "Estudiante 32", level: "Medio" },
+                        { name: "Estudiante 33", level: "Bajo" },
+                        { name: "Estudiante 34", level: "Alto" },
+                        { name: "Estudiante 35", level: "Medio" },
+                    ]
+                }
+            },
+            "7A": {
+                "lectura": {
+                    title: "7° Básico A - Lectura",
+                    levels: { "nivel I": 12.5, "nivel II": 81.25, "nivel III": 6.25 },
+                    skills: { "Localizar": 71.09, "Interpretar y relacionar": 56.74, "Reflexionar": 42.86 },
+                    students: [
+                        { name: "ÁLVAREZ GONZALEZ SILVANA PA", level: "nivel II" },
+                        { name: "BENITES ROJAS NICOLA ALEXAN", level: "nivel II" },
+                        { name: "CALDERON CONTRERAS SOPHIA E", level: "nivel II" },
+                        { name: "CAMUS POBLETE DIDDIER NICOL", level: "nivel III" },
+                        { name: "ESCARAY ESCARAY LUIS ALEJAN", level: "nivel II" },
+                        { name: "GONZALEZ FERNANDEZ JESUS MU", level: "nivel II" },
+                        { name: "HERRERA GIBERT LUNA ABRIL", level: "nivel II" },
+                        { name: "HIDALGO FERREIRA SOPHIA NAZA", level: "nivel II" },
+                        { name: "LOZADA MENDOZA ANSHONY LOR", level: "nivel II" },
+                        { name: "MARULANDA MOTATO BISMAR", level: "nivel I" },
+                        { name: "MEDINA LOPEZ FIORELLA DEL V", level: "nivel II" },
+                        { name: "MEJIAS AGUIRRE VICENTE IGNA", level: "nivel III" },
+                        { name: "MICHEA NAVARRO ANTHONY ELIA", level: "nivel II" },
+                        { name: "NAVA ANDRADE SOPHIA VICTORI", level: "nivel II" },
+                        { name: "NUÑEZ MALAVE SAMUEL SANTIAG", level: "nivel II" },
+                        { name: "PAZO ENTRENA JULIETA VICTOR", level: "nivel III" },
+                        { name: "PEREZ MUJICA JOHAN JAVIER", level: "nivel I" },
+                        { name: "PIÑA DE LA ROSA FERNANDO AL", level: "nivel II" },
+                        { name: "REYES TRAPEN VICTORIA ANTON", level: "nivel I" },
+                        { name: "RINCON BERMUDEZ SHADERIT VA", level: "nivel II" },
+                        { name: "RODRIGUEZ MELENDEZ MADELIN", level: "nivel II" },
+                        { name: "SABATINO RODRIGUEZ FERNANDO", level: "nivel III" },
+                        { name: "SOSA URDANETA MIA ESPERANZA", level: "nivel II" },
+                        { name: "VASQUEZ CARLOS MATHIAS CHRI", level: "nivel II" },
+                        { name: "VERGARA NORAMBUENA ANASTAS", level: "nivel I" },
+                        { name: "VIDAL BRAND LUCIANA", level: "nivel II" },
+                        { name: "VILORIA MORILLO VICTORIA VA", level: "nivel II" },
+                        { name: "AGUILA OLGUIN JORDAN ANDRES", level: "nivel II" },
+                        { name: "ACOSTA ARIAS MATHIAS ENRIQU", level: "nivel I" },
+                        { name: "FIGUERA CABRERA ARANZA ZOIL", level: "nivel I" },
+                        { name: "FERNANDEZ QUISBERT ANGELO S", level: "nivel II" },
+                        { name: "VELIS VERDE KENDHRA ANTONE", level: "nivel II" },
+                    ]
+                },
+                "matematica": {
+                    title: "7° Básico A - Matemática",
+                    levels: { "nivel I": 75.0, "nivel II": 25.0, "nivel III": 0.0 },
+                    skills: { "Números": 33.77, "Álgebra y funciones": 28.17, "Geometría": 30.00, "Probabilidad y estadística": 36.61 },
+                    students: [
+                        { name: "ÁLVAREZ GONZALEZ SILVANA PA", level: "nivel II" },
+                        { name: "BENITES ROJAS NICOLA ALEXAN", level: "nivel II" },
+                        { name: "CALDERON CONTRERAS SOPHIA E", level: "nivel I" },
+                        { name: "CAMUS POBLETE DIDDIER NICOL", level: "nivel III" },
+                        { name: "ESCARAY ESCARAY LUIS ALEJAN", level: "nivel II" },
+                        { name: "GONZALEZ FERNANDEZ JESUS MU", level: "nivel I" },
+                        { name: "HIDALGO FERREIRA SOPHIA NAZA", level: "nivel II" },
+                        { name: "LOZADA MENDOZA ANSHONY LOR", level: "nivel II" },
+                        { name: "MARULANDA MOTATO BISMAR", level: "nivel II" },
+                        { name: "MEDINA LOPEZ FIORELLA DEL V", level: "nivel I" },
+                        { name: "MEJIAS AGUIRRE VICENTE IGNA", level: "nivel II" },
+                        { name: "MICHEA NAVARRO ANTHONY ELIA", level: "nivel I" },
+                        { name: "NAVA ANDRADE SOPHIA VICTORI", level: "nivel I" },
+                        { name: "NUÑEZ MALAVE SAMUEL SANTIAG", level: "nivel I" },
+                        { name: "PAZO ENTRENA JULIETA VICTOR", level: "nivel I" },
+                        { name: "PEREZ MUJICA JOHAN JAVIER", level: "nivel II" },
+                        { name: "PIÑA DE LA ROSA FERNANDO AL", level: "nivel II" },
+                        { name: "REYES TRAPEN VICTORIA ANTON", level: "nivel I" },
+                        { name: "RINCON BERMUDEZ SHADERIT VA", level: "nivel II" },
+                        { name: "RODRIGUEZ MELENDEZ MADELIN", level: "nivel II" },
+                        { name: "SABATINO RODRIGUEZ FERNANDO", level: "nivel I" },
+                        { name: "SOSA URDANETA MIA ESPERANZA", level: "nivel I" },
+                        { name: "VASQUEZ CARLOS MATHIAS CHRI", level: "nivel II" },
+                        { name: "VERGARA NORAMBUENA ANASTAS", level: "nivel I" },
+                        { name: "VIDAL BRAND LUCIANA", level: "nivel I" },
+                        { name: "VILORIA MORILLO VICTORIA VA", level: "nivel I" },
+                        { name: "AGUILA OLGUIN JORDAN ANDRES", level: "nivel I" },
+                        { name: "ACOSTA ARIAS MATHIAS ENRIQU", level: "nivel I" },
+                        { name: "FIGUERA CABRERA ARANZA ZOIL", level: "nivel I" },
+                        { name: "FERNANDEZ QUISBERT ANGELO S", level: "nivel I" },
+                        { name: "VELIS VERDE KENDHRA ANTONE", level: "nivel II" },
+                    ]
+                },
+                "socioemocional": {
+                    title: "7° Básico A - Socioemocional",
+                    levels: { "% RF": 40.00, "% RNF": 60.00 }, // General course result (Anxiety)
+                    skills: {
+                        "Promoción del aprendizaje colaborativo": 74.22,
+                        "Fortalecimiento del vínculo para el aprendizaje": 93.75,
+                        "Apoyo de docentes y pares para la autorregulación académica": 83.59,
+                        "Autorregulación del aprendizaje": 65.63,
+                        "Ansiedad académica": 40.00, // Note: This is %RF for NO anxiety. Lower is better.
+                        "Habilidades para la ciudadanía digital": 70.98,
+                        "Promoción de la ciudadanía digital": 71.09
+                    },
+                    students: [
+                        { name: "Estudiante 1", level: "Alto" }, // No individual student data with levels
+                        { name: "Estudiante 2", level: "Medio" },
+                        { name: "Estudiante 3", level: "Bajo" },
+                        { name: "Estudiante 4", level: "Alto" },
+                        { name: "Estudiante 5", level: "Medio" },
+                        { name: "Estudiante 6", level: "Bajo" },
+                        { name: "Estudiante 7", level: "Alto" },
+                        { name: "Estudiante 8", level: "Medio" },
+                        { name: "Estudiante 9", level: "Bajo" },
+                        { name: "Estudiante 10", level: "Alto" },
+                        { name: "Estudiante 11", level: "Medio" },
+                        { name: "Estudiante 12", level: "Bajo" },
+                        { name: "Estudiante 13", level: "Alto" },
+                        { name: "Estudiante 14", level: "Medio" },
+                        { name: "Estudiante 15", level: "Bajo" },
+                        { name: "Estudiante 16", level: "Alto" },
+                        { name: "Estudiante 17", level: "Medio" },
+                        { name: "Estudiante 18", level: "Bajo" },
+                        { name: "Estudiante 19", level: "Alto" },
+                        { name: "Estudiante 20", level: "Medio" },
+                        { name: "Estudiante 21", level: "Bajo" },
+                        { name: "Estudiante 22", level: "Alto" },
+                        { name: "Estudiante 23", level: "Medio" },
+                        { name: "Estudiante 24", level: "Bajo" },
+                        { name: "Estudiante 25", level: "Alto" },
+                        { name: "Estudiante 26", level: "Medio" },
+                        { name: "Estudiante 27", level: "Bajo" },
+                        { name: "Estudiante 28", level: "Alto" },
+                        { name: "Estudiante 29", level: "Medio" },
+                        { name: "Estudiante 30", level: "Bajo" },
+                        { name: "Estudiante 31", level: "Alto" },
+                        { name: "Estudiante 32", level: "Medio" },
+                    ]
+                }
+            },
+            "8A": {
+                "lectura": {
+                    title: "8° Básico A - Lectura",
+                    levels: { "nivel I": 19.23, "nivel II": 73.08, "nivel III": 7.69 },
+                    skills: { "Localizar": 67.31, "Interpretar y relacionar": 54.66, "Reflexionar": 47.12 },
+                    students: [
+                        { name: "ARMAS GAMES IRENE FABIANA", level: "nivel II" },
+                        { name: "AVILES ROMERO ALEXA PAOLA", level: "nivel II" },
+                        { name: "BARRIOS GONZALEZ YEFRIN MOI", level: "nivel I" },
+                        { name: "CORNEJO HORMAZABAL CONSTAN", level: "nivel II" },
+                        { name: "FIGUEROA HERNANDEZ JUAN AND", level: "nivel II" },
+                        { name: "GARCIA MARTINEZ ZHANDRA PAO", level: "nivel III" },
+                        { name: "GARCIA PERDOMO SILVANA ANTO", level: "nivel II" },
+                        { name: "GARCIA CURÍN NEYMIAS JESÚS", level: "nivel III" },
+                        { name: "GODOY MONTERO ARIADNA ALES", level: "nivel I" },
+                        { name: "MIRANDA BERRIOS ANNELI PASC", level: "nivel II" },
+                        { name: "MONSALVE OSORIO SANYHERITH", level: "nivel II" },
+                        { name: "MORA QUINTERO SAMUEL ALEJAN", level: "nivel II" },
+                        { name: "NAVARRO PASTENEZ EMILIA AND", level: "nivel II" },
+                        { name: "PERAZA FLORES KEISHABETT JU", level: "nivel III" },
+                        { name: "PEÑA HERNANDEZ JOSE FABIÁN", level: "nivel I" },
+                        { name: "PEÑA HERNANDEZ JOSE SEBASTI", level: "nivel II" },
+                        { name: "RIVAS CHAU ARIANA CAMILA", level: "nivel II" },
+                        { name: "RODRIGUEZ LOPEZ JOSEANNY DA", level: "nivel III" },
+                        { name: "ROJAS NARANJO SOFIA AMARAL", level: "nivel II" },
+                        { name: "SANCHEZ HERNANDEZ YOHALIS P", level: "nivel III" },
+                        { name: "SOTOMAYOR QUIMIZ JOISE PATR", level: "nivel II" },
+                        { name: "SUAREZ URQUIOLA FABIAN ALEJ", level: "nivel II" },
+                        { name: "TIZNADO SAN MARTÍN SEBASTIÁ", level: "nivel II" },
+                        { name: "MARTINEZ SOTO ZOE ANTHONELL", level: "nivel I" },
+                        { name: "SALAS KHASSALE CRISTIAN ELI", level: "nivel II" },
+                        { name: "PINILLOS MILLAN HECTOR ALEX", level: "nivel II" },
+                    ]
+                },
+                "matematica": {
+                    title: "8° Básico A - Matemática",
+                    levels: { "nivel I": 80.77, "nivel II": 19.23, "nivel III": 0.0 },
+                    skills: { "Números": 42.31, "Álgebra y funciones": 39.90, "Geometría": 25.96, "Probabilidad y estadística": 28.37 },
+                    students: [
+                        { name: "ARMAS GAMES IRENE FABIANA", level: "nivel II" },
+                        { name: "AVILES ROMERO ALEXA PAOLA", level: "nivel II" },
+                        { name: "BARRIOS GONZALEZ YEFRIN MOI", level: "nivel I" },
+                        { name: "CORNEJO HORMAZABAL CONSTAN", level: "nivel I" },
+                        { name: "FIGUEROA HERNANDEZ JUAN AND", level: "nivel II" },
+                        { name: "GARCIA MARTINEZ ZHANDRA PAO", level: "nivel II" },
+                        { name: "GARCIA PERDOMO SILVANA ANTO", level: "nivel II" },
+                        { name: "GARCIA CURÍN NEYMIAS JESÚS", level: "nivel I" },
+                        { name: "GODOY MONTERO ARIADNA ALES", level: "nivel II" },
+                        { name: "MIRANDA BERRIOS ANNELI PASC", level: "nivel I" },
+                        { name: "MONSALVE OSORIO SANYHERITH", level: "nivel I" },
+                        { name: "MORA QUINTERO SAMUEL ALEJAN", level: "nivel I" },
+                        { name: "NAVARRO PASTENEZ EMILIA AND", level: "nivel I" },
+                        { name: "PERAZA FLORES KEISHABETT JU", level: "nivel III" },
+                        { name: "PEÑA HERNANDEZ JOSE FABIÁN", level: "nivel I" },
+                        { name: "PEÑA HERNANDEZ JOSE SEBASTI", level: "nivel I" },
+                        { name: "RIVAS CHAU ARIANA CAMILA", level: "nivel II" },
+                        { name: "RODRIGUEZ LOPEZ JOSEANNY DA", level: "nivel II" },
+                        { name: "ROJAS NARANJO SOFIA AMARAL", level: "nivel II" },
+                        { name: "SANCHEZ HERNANDEZ YOHALIS P", level: "nivel II" },
+                        { name: "SOTOMAYOR QUIMIZ JOISE PATR", level: "nivel I" },
+                        { name: "SUAREZ URQUIOLA FABIAN ALEJ", level: "nivel II" },
+                        { name: "TIZNADO SAN MARTÍN SEBASTIÁ", level: "nivel I" },
+                        { name: "MARTINEZ SOTO ZOE ANTHONELL", level: "nivel I" },
+                        { name: "SALAS KHASSALE CRISTIAN ELI", level: "nivel I" },
+                        { name: "PINILLOS MILLAN HECTOR ALEX", level: "nivel I" },
+                        { name: "PAVEZ PEREIRA JOAQUIN ALONS", level: "nivel I" },
+                    ]
+                },
+                "socioemocional": {
+                    title: "8° Básico A - Socioemocional",
+                    levels: { "% RF": 43.70, "% RNF": 56.30 }, // General course result (Anxiety)
+                    skills: {
+                        "Promoción del aprendizaje colaborativo": 68.52,
+                        "Fortalecimiento del vínculo para el aprendizaje": 85.93,
+                        "Apoyo de docentes y pares para la autorregulación académica": 73.15,
+                        "Autorregulación del aprendizaje": 55.56,
+                        "Ansiedad académica": 43.70, // Note: This is %RF for NO anxiety. Lower is better.
+                        "Habilidades para la ciudadanía digital": 69.31,
+                        "Promoción de la ciudadanía digital": 55.56
+                    },
+                    students: [
+                        { name: "Estudiante 1", level: "Alto" }, // No individual student data with levels
+                        { name: "Estudiante 2", level: "Medio" },
+                        { name: "Estudiante 3", level: "Bajo" },
+                        { name: "Estudiante 4", level: "Alto" },
+                        { name: "Estudiante 5", level: "Medio" },
+                        { name: "Estudiante 6", level: "Bajo" },
+                        { name: "Estudiante 7", level: "Alto" },
+                        { name: "Estudiante 8", level: "Medio" },
+                        { name: "Estudiante 9", level: "Bajo" },
+                        { name: "Estudiante 10", level: "Alto" },
+                        { name: "Estudiante 11", level: "Medio" },
+                        { name: "Estudiante 12", level: "Bajo" },
+                        { name: "Estudiante 13", level: "Alto" },
+                        { name: "Estudiante 14", level: "Medio" },
+                        { name: "Estudiante 15", level: "Bajo" },
+                        { name: "Estudiante 16", level: "Alto" },
+                        { name: "Estudiante 17", level: "Medio" },
+                        { name: "Estudiante 18", level: "Bajo" },
+                        { name: "Estudiante 19", level: "Alto" },
+                        { name: "Estudiante 20", level: "Medio" },
+                        { name: "Estudiante 21", level: "Bajo" },
+                        { name: "Estudiante 22", level: "Alto" },
+                        { name: "Estudiante 23", level: "Medio" },
+                        { name: "Estudiante 24", level: "Bajo" },
+                        { name: "Estudiante 25", level: "Alto" },
+                        { name: "Estudiante 26", level: "Medio" },
+                        { name: "Estudiante 27", level: "Bajo" },
+                    ]
+                }
+            }
+        };
+
+        let currentCourse = "2A";
+        let currentArea = "lectura";
+        let levelsChartInstance = null;
+        let skillsChartInstance = null;
+
+        // Función para actualizar el dashboard
+        function updateDashboard() {
+            const courseData = allData[currentCourse];
+            const areaData = courseData ? courseData[currentArea] : null;
+
+            const dashboardTitle = document.getElementById('dashboard-title');
+            dashboardTitle.textContent = areaData ? `Dashboard del Curso ${areaData.title}` : `Dashboard del Curso ${currentCourse} - ${currentArea}`;
+
+            // Actualizar gráficos solo si hay datos disponibles para el área y el curso
+            if (areaData && areaData.levels) {
+                renderLevelsChart(areaData.levels);
+            } else {
+                renderEmptyChart('levelsChart', 'Niveles de Logro', 'No hay datos disponibles para esta área y curso.');
+            }
+
+            if (areaData && areaData.skills) {
+                renderSkillsChart(areaData.skills);
+            } else {
+                renderEmptyChart('skillsChart', 'Ejes de Habilidad/Temáticos', 'No hay datos disponibles para esta área y curso.');
+            }
+
+            if (areaData && areaData.students) {
+                renderStudentList(areaData.students);
+            } else {
+                renderEmptyStudentList('No hay datos de estudiantes disponibles para esta área y curso.');
+            }
+        }
+
+        // Función para renderizar el gráfico de niveles de logro
+        function renderLevelsChart(levelsData) {
+            const ctx = document.getElementById('levelsChart').getContext('2d');
+            if (levelsChartInstance) {
+                levelsChartInstance.destroy();
+            }
+
+            levelsChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(levelsData),
+                    datasets: [{
+                        data: Object.values(levelsData),
+                        backgroundColor: ['#e74c3c', '#f39c12', '#2ecc71'], // Red, Orange, Green
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    family: 'Inter',
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Función para renderizar el gráfico de habilidades/ejes temáticos
+        function renderSkillsChart(skillsData) {
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            if (skillsChartInstance) {
+                skillsChartInstance.destroy();
+            }
+
+            skillsChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(skillsData),
+                    datasets: [{
+                        label: 'Porcentaje de Respuestas Correctas',
+                        data: Object.values(skillsData),
+                        backgroundColor: ['#3498db', '#9b59b6', '#3498db', '#f1c40f', '#e67e22', '#27ae60', '#c0392b'],
+                        borderColor: '#2c3e50',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false // Ocultar leyenda si no es necesaria
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Porcentaje (%)',
+                                font: {
+                                    family: 'Inter',
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Inter',
+                                    size: 12
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Eje de Habilidad/Temático',
+                                font: {
+                                    family: 'Inter',
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Inter',
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Función para renderizar un gráfico vacío con un mensaje
+        function renderEmptyChart(canvasId, title, message) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            if (canvasId === 'levelsChart' && levelsChartInstance) {
+                levelsChartInstance.destroy();
+                levelsChartInstance = null;
+            } else if (canvasId === 'skillsChart' && skillsChartInstance) {
+                skillsChartInstance.destroy();
+                skillsChartInstance = null;
+            }
+
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.font = "16px 'Inter'";
+            ctx.textAlign = "center";
+            ctx.fillStyle = "#777";
+            ctx.fillText(message, ctx.canvas.width / 2, ctx.canvas.height / 2);
+        }
+
+        // Función para renderizar la lista de estudiantes
+        function renderStudentList(studentsData) {
+            const studentListDiv = document.getElementById('studentList');
+            studentListDiv.innerHTML = ''; // Limpiar lista existente
+
+            if (studentsData && studentsData.length > 0) {
+                studentsData.forEach(student => {
+                    const studentItem = document.createElement('div');
+                    studentItem.classList.add('student-item', 'px-4', 'py-2', 'rounded-md', 'mb-2', 'shadow-sm', 'hover:bg-gray-50');
+                    const levelClass = {
+                        "nivel I": "level-I",
+                        "nivel II": "level-II",
+                        "nivel III": "level-III",
+                        "Alto": "level-III",
+                        "Medio": "level-II",
+                        "Bajo": "level-I",
+                    }[student.level] || ''; // Mapear niveles a clases CSS
+                    studentItem.innerHTML = `
+                        <span>${student.name}</span>
+                        <span class="level-indicator ${levelClass}">${student.level}</span>
+                    `;
+                    studentListDiv.appendChild(studentItem);
+                });
+            } else {
+                studentListDiv.innerHTML = '<p class="text-center text-gray-500 py-4">No hay datos de estudiantes disponibles para esta área y curso.</p>';
+            }
+        }
+
+        // Función para renderizar una lista de estudiantes vacía con un mensaje
+        function renderEmptyStudentList(message) {
+            const studentListDiv = document.getElementById('studentList');
+            studentListDiv.innerHTML = `<p class="text-center text-gray-500 py-4">${message}</p>`;
+        }
+
+
+        // Manejadores de eventos para los botones de curso
+        document.querySelectorAll('.course-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.course-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentCourse = button.dataset.course;
+                updateDashboard();
+            });
+        });
+
+        // Manejadores de eventos para los botones de pestaña
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentArea = button.dataset.area;
+                updateDashboard();
+            });
+        });
+
+        // Inicializar el dashboard con los datos predeterminados
+        updateDashboard();
+    </script>
+</body>
+</html>
