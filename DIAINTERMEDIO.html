@@ -97,6 +97,12 @@
             color: white;
             transform: translateY(-2px);
         }
+        #tabs button:disabled {
+            background-color: #cccccc;
+            color: #999999;
+            cursor: not-allowed;
+            transform: none;
+        }
         .dashboard-section {
             background-color: #fff;
             padding: 25px;
@@ -227,7 +233,7 @@
         <header id="header">
             <h1 id="dashboard-title">Dashboard del Curso 2° Básico A</h1>
             <nav id="tabs">
-                <button class="tab-button active" data-area="socioemocional">Socioemocional</button>
+                <button class="tab-button" data-area="socioemocional">Socioemocional</button>
                 <button class="tab-button" data-area="lectura">Lectura</button>
                 <button class="tab-button" data-area="matematica">Matemática</button>
             </nav>
@@ -305,8 +311,8 @@
                         { name: "ROBLES GRAJALES JOSHUA MATE", level: "nivel I" },
                     ]
                 },
-                "matematica": { /* No hay datos para 2A en Matemática en los informes proporcionados */ },
-                "socioemocional": { /* No hay datos para 2A en Socioemocional en los informes proporcionados */ }
+                "matematica": { }, /* No hay datos para 2A en Matemática en los informes proporcionados */
+                "socioemocional": { } /* No hay datos para 2A en Socioemocional en los informes proporcionados */
             },
             "3A": {
                 "lectura": {
@@ -394,7 +400,7 @@
                         { name: "RAMIREZ PEROZO LUCIA VICTOR", level: "nivel III" }
                     ]
                 },
-                "socioemocional": { /* No hay datos para 3A en Socioemocional en los informes proporcionados */ }
+                "socioemocional": { } /* No hay datos para 3A en Socioemocional en los informes proporcionados */
             },
             "4A": {
                 "lectura": {
@@ -1060,32 +1066,88 @@
         let currentArea = "lectura";
         let levelsChartInstance = null;
         let skillsChartInstance = null;
+        // La clave de API y la funcionalidad de sugerencias pedagógicas han sido eliminadas.
+
+        // Función para verificar si un objeto de datos tiene contenido relevante
+        function hasRelevantData(dataObject) {
+            return dataObject && (
+                (dataObject.levels && Object.keys(dataObject.levels).length > 0) ||
+                (dataObject.skills && Object.keys(dataObject.skills).length > 0) ||
+                (dataObject.students && dataObject.students.length > 0)
+            );
+        }
 
         // Función para actualizar el dashboard
         function updateDashboard() {
             const courseData = allData[currentCourse];
-            const areaData = courseData ? courseData[currentArea] : null;
+            let firstAvailableArea = null; // Para almacenar la primera área con datos
 
+            // 1. Iterar sobre las pestañas y habilitarlas/deshabilitarlas
+            document.querySelectorAll('.tab-button').forEach(button => {
+                const area = button.dataset.area;
+                const areaDataForCourse = courseData ? courseData[area] : null;
+                const hasData = hasRelevantData(areaDataForCourse);
+
+                if (hasData) {
+                    button.disabled = false;
+                    button.classList.remove('opacity-50', 'cursor-not-allowed');
+                    if (!firstAvailableArea) {
+                        firstAvailableArea = area; // Guardar la primera área disponible
+                    }
+                } else {
+                    button.disabled = true;
+                    button.classList.add('opacity-50', 'cursor-not-allowed');
+                    button.classList.remove('active'); // Asegurarse de que no esté activa si está deshabilitada
+                }
+            });
+
+            // 2. Ajustar currentArea si la pestaña actual no tiene datos o si se selecciona un curso sin esa área
+            const currentAreaDataForCourse = courseData ? courseData[currentArea] : null;
+            const currentAreaHasData = hasRelevantData(currentAreaDataForCourse);
+
+            if (!currentAreaHasData && firstAvailableArea) {
+                currentArea = firstAvailableArea; // Cambiar a la primera área disponible
+            } else if (!currentAreaHasData && !firstAvailableArea) {
+                currentArea = null; // No hay áreas disponibles para este curso
+            }
+
+            // 3. Activar visualmente la pestaña correcta
+            document.querySelectorAll('.tab-button').forEach(button => {
+                if (button.dataset.area === currentArea) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+
+            // Actualizar el título del dashboard
             const dashboardTitle = document.getElementById('dashboard-title');
-            dashboardTitle.textContent = areaData ? `Dashboard del Curso ${areaData.title}` : `Dashboard del Curso ${currentCourse} - ${currentArea}`;
+            const newAreaData = courseData ? courseData[currentArea] : null;
+            dashboardTitle.textContent = newAreaData ? `Dashboard del Curso ${newAreaData.title}` : `Dashboard del Curso ${currentCourse} - Sin Datos`;
 
-            // Actualizar gráficos solo si hay datos disponibles para el área y el curso
-            if (areaData && areaData.levels) {
-                renderLevelsChart(areaData.levels);
-            } else {
-                renderEmptyChart('levelsChart', 'Niveles de Logro', 'No hay datos disponibles para esta área y curso.');
-            }
+            // Cargar datos y gráficos para el currentArea (posiblemente actualizado)
+            if (newAreaData) {
+                if (newAreaData.levels) {
+                    renderLevelsChart(newAreaData.levels);
+                } else {
+                    renderEmptyChart('levelsChart', 'Niveles de Logro', 'No hay datos disponibles para esta área y curso.');
+                }
 
-            if (areaData && areaData.skills) {
-                renderSkillsChart(areaData.skills);
-            } else {
-                renderEmptyChart('skillsChart', 'Ejes de Habilidad/Temáticos', 'No hay datos disponibles para esta área y curso.');
-            }
+                if (newAreaData.skills) {
+                    renderSkillsChart(newAreaData.skills);
+                } else {
+                    renderEmptyChart('skillsChart', 'Ejes de Habilidad/Temáticos', 'No hay datos disponibles para esta área y curso.');
+                }
 
-            if (areaData && areaData.students) {
-                renderStudentList(areaData.students);
+                if (newAreaData.students) {
+                    renderStudentList(newAreaData.students);
+                } else {
+                    renderEmptyStudentList('No hay datos de estudiantes disponibles para esta área y curso.');
+                }
             } else {
-                renderEmptyStudentList('No hay datos de estudiantes disponibles para esta área y curso.');
+                renderEmptyChart('levelsChart', 'Niveles de Logro', 'No hay datos disponibles para este curso y área.');
+                renderEmptyChart('skillsChart', 'Ejes de Habilidad/Temáticos', 'No hay datos disponibles para este curso y área.');
+                renderEmptyStudentList('No hay datos de estudiantes disponibles para este curso y área.');
             }
         }
 
@@ -1288,10 +1350,13 @@
         // Manejadores de eventos para los botones de pestaña
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', () => {
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                currentArea = button.dataset.area;
-                updateDashboard();
+                // Solo cambiar si la pestaña no está deshabilitada
+                if (!button.disabled) {
+                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentArea = button.dataset.area;
+                    updateDashboard();
+                }
             });
         });
 
