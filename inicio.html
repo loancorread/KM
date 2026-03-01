@@ -27,27 +27,12 @@
                 height: 400px;
             }
         }
-        .timeline-step {
-            position: relative;
-            padding-left: 2rem;
-            border-left: 4px solid #3B82F6;
-            margin-bottom: 1.5rem;
-        }
-        .timeline-step::before {
-            content: "•";
-            position: absolute;
-            left: -0.65rem;
-            top: -0.5rem;
-            font-size: 2rem;
-            color: #3B82F6;
-        }
     </style>
 </head>
 <body class="antialiased">
     <!-- Palette: Vibrant Mapuche Blue & Amber (#1E3A8A, #3B82F6, #F59E0B, #10B981, #EF4444) -->
     <!-- CONFIRMATION: NEITHER Mermaid JS NOR SVG were used anywhere in this output. -->
-    <!-- Narrative Plan: 1. Hero Introduction setting the tone. 2. Identidad (PEI) with Polar chart showing core values. 3. El Valor del Tiempo with a bar chart showing lost minutes. 4. Comunicación Oficial with a Doughnut chart. 5. Protocolo de Mejora using a structured Tailwind grid timeline. -->
-    <!-- Visual Choices: 1. Identidad -> Compare -> Polar Area Chart (Chart.js) -> Shows equal weight of core pillars (NO SVG). 2. Puntualidad -> Inform/Compare -> Bar Chart (Chart.js) -> Starkly contrasts 0 mins vs 800 mins lost (NO SVG). 3. Comunicación -> Organize/Compare -> Doughnut Chart (Chart.js) -> Shows acceptable vs prohibited channels clearly (NO SVG). -->
+    <!-- Narrative Plan: 1. Hero Introduction. 2. Identidad (PEI) with Polar chart (No legend). 3. Puntualidad bar chart. 4. Visual comparison for allowed/prohibited channels with icons. 5. Improvement Protocol. -->
 
     <main class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
         
@@ -65,44 +50,26 @@
                 <span class="text-4xl">🏔️</span> Nuestra Identidad y PEI
             </h3>
             <p class="text-lg mb-8 text-gray-700 leading-relaxed">
-                El Proyecto Educativo Institucional (PEI) es nuestro ADN. Este 2026, nos enfocamos en ser referentes de educación intercultural, donde cada estudiante desarrolle herramientas para la vida en un ambiente de total respeto, seguridad y valoración de sus orígenes. Nuestros tres sellos fundamentales guían cada decisión.
+                El Proyecto Educativo Institucional (PEI) es nuestro ADN. Este 2026, nos enfocamos en ser referentes de educación intercultural. Nuestros tres sellos fundamentales guían cada decisión y se presentan con igual relevancia en nuestra gestión.
             </p>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
                 <div class="chart-container">
                     <canvas id="sellosChart"></canvas>
                 </div>
-                <div class="space-y-6">
+                <div class="grid grid-cols-1 gap-4">
                     <div class="bg-blue-50 p-5 rounded-xl border-l-4 border-blue-500 shadow-sm">
                         <h4 class="font-bold text-xl text-blue-800 mb-2">🗣️ Participativa</h4>
-                        <p class="text-gray-700">Tu voz y la de los estudiantes construyen activamente la escuela que soñamos.</p>
+                        <p class="text-gray-700">La voz de todos construye activamente nuestra escuela.</p>
                     </div>
                     <div class="bg-yellow-50 p-5 rounded-xl border-l-4 border-yellow-500 shadow-sm">
                         <h4 class="font-bold text-xl text-yellow-700 mb-2">🌍 Intercultural</h4>
-                        <p class="text-gray-700">Valoramos nuestras raíces originarias y la riqueza de las nuevas culturas en nuestras aulas.</p>
+                        <p class="text-gray-700">Valoramos las raíces y la riqueza de las nuevas culturas.</p>
                     </div>
                     <div class="bg-emerald-50 p-5 rounded-xl border-l-4 border-emerald-500 shadow-sm">
                         <h4 class="font-bold text-xl text-emerald-800 mb-2">🤝 Diversidad</h4>
-                        <p class="text-gray-700">No solo toleramos las diferencias, las <strong>valoramos</strong> como el pilar de la sociedad del siglo XXI.</p>
+                        <p class="text-gray-700">Valoramos las diferencias como pilar de nuestra comunidad.</p>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <section class="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-t-4 border-indigo-500 hover:shadow-xl transition-shadow text-center">
-                <div class="text-5xl mb-4">👩‍🏫</div>
-                <h4 class="text-xl font-bold text-indigo-900 mb-3">Docentes</h4>
-                <p class="text-gray-600 text-sm">Líderes pedagógicos que planifican con intención, se actualizan constantemente y modelan los valores de la escuela.</p>
-            </div>
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-t-4 border-teal-500 hover:shadow-xl transition-shadow text-center">
-                <div class="text-5xl mb-4">🧑‍💼</div>
-                <h4 class="text-xl font-bold text-teal-900 mb-3">Asistentes</h4>
-                <p class="text-gray-600 text-sm">Piezas clave y fundamentales en la formación integral de los estudiantes y el soporte administrativo y humano.</p>
-            </div>
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-t-4 border-rose-500 hover:shadow-xl transition-shadow text-center">
-                <div class="text-5xl mb-4">🎒</div>
-                <h4 class="text-xl font-bold text-rose-900 mb-3">Estudiantes</h4>
-                <p class="text-gray-600 text-sm">Protagonistas responsables de su aprendizaje, respetuosos y ciudadanos activos en la comunidad educativa.</p>
             </div>
         </section>
 
@@ -110,16 +77,13 @@
             <h3 class="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
                 <span class="text-4xl">⏱️</span> El Valor del Tiempo (Puntualidad)
             </h3>
-            <p class="text-lg mb-8 text-gray-700 leading-relaxed">
-                La puntualidad no es solo un requerimiento administrativo, es un valor educativo y una muestra de respeto. Iniciamos la jornada a las 08:00 hrs. Un pequeño retraso en los bloques de entrada, recreos o colación tiene un efecto acumulativo devastador en el proceso de enseñanza.
-            </p>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
                 <div class="order-2 lg:order-1 flex flex-col justify-center">
                     <div class="bg-red-50 p-6 rounded-xl border-2 border-red-200 text-center shadow-sm">
                         <span class="block text-5xl font-black text-red-600 mb-2">800</span>
                         <span class="block text-xl font-bold text-red-800 mb-2">Minutos Perdidos al Mes</span>
                         <p class="text-red-700 text-sm">
-                            Este es el impacto real de demorarse solo <strong>2 minutos</strong> al ingresar a cada bloque de clases (10:05, 11:35, 14:10). ¡Protejamos el tiempo de aprendizaje!
+                            Impacto real de demorarse solo <strong>2 minutos</strong> al ingresar a cada bloque de clases. ¡Protejamos el aprendizaje!
                         </p>
                     </div>
                 </div>
@@ -129,31 +93,75 @@
             </div>
         </section>
 
-        <section class="mb-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-10 border-t-4 border-emerald-500">
-                <h3 class="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-3">
-                    <span class="text-3xl">📱</span> Canales y Tecnología
-                </h3>
-                <p class="text-gray-600 mb-6">
-                    Para resguardar la vida privada de nuestro equipo y mantener la formalidad, se establecen canales oficiales estrictos para el 2026. La Ley de No Uso de Celulares aplica para resguardar la concentración en el aula.
-                </p>
-                <div class="chart-container" style="height: 280px;">
-                    <canvas id="canalesChart"></canvas>
+        <section class="mb-12 bg-white rounded-2xl shadow-lg p-6 md:p-10 border-t-4 border-emerald-500">
+            <h3 class="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
+                <span class="text-4xl">📱</span> Canales de Comunicación y Tecnología
+            </h3>
+            <p class="text-lg mb-8 text-gray-700">
+                Para garantizar la profesionalidad y el respeto a la vida privada, se establecen los siguientes lineamientos sobre los medios de contacto oficial:
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Columna Permitido -->
+                <div class="bg-emerald-50 rounded-2xl p-6 border-2 border-emerald-200 shadow-sm">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-emerald-500 text-white p-2 rounded-full text-xl">✅</div>
+                        <h4 class="text-2xl font-bold text-emerald-800 uppercase tracking-wider">Permitido</h4>
+                    </div>
+                    <ul class="space-y-6">
+                        <li class="flex items-start gap-4">
+                            <span class="text-3xl">📧</span>
+                            <div>
+                                <p class="font-bold text-emerald-900">Correo Institucional</p>
+                                <p class="text-sm text-emerald-700">Canal formal para gestiones administrativas y avisos oficiales.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <span class="text-3xl">📖</span>
+                            <div>
+                                <p class="font-bold text-emerald-900">Libreta de Comunicaciones</p>
+                                <p class="text-sm text-emerald-700">Vínculo diario y oficial con el apoderado y el hogar.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <span class="text-3xl">🤝</span>
+                            <div>
+                                <p class="font-bold text-emerald-900">Entrevistas Presenciales</p>
+                                <p class="text-sm text-emerald-700">Citas programadas en horarios establecidos por el centro.</p>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
-            </div>
 
-            <div class="space-y-6 flex flex-col justify-between">
-                <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-blue-600">
-                    <h4 class="text-xl font-bold mb-2 flex items-center gap-2"><span>✅</span> Gestión de Asistencia</h4>
-                    <p class="text-gray-600 text-sm">Marcaje obligatorio en Reloj Control. Ausencias se notifican <strong>solo por correo</strong> a km.dir@edununoa.cl (WhatsApp no es válido). Permisos con 24 hrs de antelación.</p>
-                </div>
-                <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-indigo-600">
-                    <h4 class="text-xl font-bold mb-2 flex items-center gap-2"><span>✅</span> Convivencia Común</h4>
-                    <p class="text-gray-600 text-sm">Autocuidado en el Casino: lavar loza propia y limpiar mesas. En el aula, el liderazgo se basa en el "Dominio B" (Marco de la Buena Enseñanza).</p>
-                </div>
-                <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-purple-600">
-                    <h4 class="text-xl font-bold mb-2 flex items-center gap-2"><span>✅</span> Ambientes y Bienestar</h4>
-                    <p class="text-gray-600 text-sm">Salas libres de contaminación visual. Implementaremos pausas activas y espacios de reflexión técnica. Un equipo sano enseña mejor.</p>
+                <!-- Columna No Permitido -->
+                <div class="bg-red-50 rounded-2xl p-6 border-2 border-red-200 shadow-sm">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-red-500 text-white p-2 rounded-full text-xl">🚫</div>
+                        <h4 class="text-2xl font-bold text-red-800 uppercase tracking-wider">No Permitido</h4>
+                    </div>
+                    <ul class="space-y-6">
+                        <li class="flex items-start gap-4">
+                            <span class="text-3xl">📵</span>
+                            <div>
+                                <p class="font-bold text-red-900">WhatsApp Personal</p>
+                                <p class="text-sm text-red-700">Queda prohibido el contacto con apoderados vía mensajería privada.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <span class="text-3xl">📣</span>
+                            <div>
+                                <p class="font-bold text-red-900">Redes Sociales Privadas</p>
+                                <p class="text-sm text-red-700">No utilizar perfiles personales para fines pedagógicos o difusión.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <span class="text-3xl">📱</span>
+                            <div>
+                                <p class="font-bold text-red-900">Celulares en Aula</p>
+                                <p class="text-sm text-red-700">Uso restringido solo a fines pedagógicos declarados o emergencias.</p>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </section>
@@ -163,38 +171,31 @@
                 <span class="text-4xl">⚖️</span> Protocolo de Mejora Profesional
             </h3>
             <p class="text-lg mb-8 text-gray-700">
-                Ante faltas a los lineamientos, el proceso será siempre privado, formativo y gradual, buscando corregir acciones mediante el acompañamiento.
+                El proceso de mejora será privado, formativo y gradual para corregir acciones mediante el acompañamiento.
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 text-7xl opacity-10">1</div>
+                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
                     <h4 class="font-bold text-blue-600 mb-2">1. Invitación</h4>
-                    <p class="text-sm text-gray-600">Correo formal de jefatura invitando a subsanar la situación.</p>
+                    <p class="text-sm text-gray-600">Correo formal de jefatura invitando a la mejora.</p>
                 </div>
-                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 text-7xl opacity-10">2</div>
+                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
                     <h4 class="font-bold text-yellow-600 mb-2">2. Amonestación Verbal</h4>
-                    <p class="text-sm text-gray-600">Diálogo privado dejando un registro escrito firmado por ambas partes.</p>
+                    <p class="text-sm text-gray-600">Diálogo privado con registro escrito firmado.</p>
                 </div>
-                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 text-7xl opacity-10">3</div>
+                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
                     <h4 class="font-bold text-orange-600 mb-2">3. Amonestación Escrita</h4>
-                    <p class="text-sm text-gray-600">Ante acumulación de faltas. Se permite un máximo de dos instancias.</p>
+                    <p class="text-sm text-gray-600">Máximo dos instancias ante acumulación de faltas.</p>
                 </div>
-                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 text-7xl opacity-10">4</div>
+                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
                     <h4 class="font-bold text-red-600 mb-2">4. Instancia Superior</h4>
-                    <p class="text-sm text-gray-600">Derivación de antecedentes al Sostenedor y Dirección del Trabajo.</p>
+                    <p class="text-sm text-gray-600">Derivación al Sostenedor y Dirección del Trabajo.</p>
                 </div>
             </div>
         </section>
 
         <footer class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-2xl p-8 text-center shadow-xl">
-            <div class="text-5xl mb-4">🌟</div>
             <h3 class="text-2xl font-bold mb-3">Reconocimiento al Compromiso</h3>
-            <p class="max-w-3xl mx-auto text-blue-100 mb-6">
-                Queremos celebrar tu excelencia. Innovaciones pedagógicas, puntualidad impecable y compromiso profundo con nuestros sellos serán destacados públicamente y mediante reconocimientos oficiales en tu hoja de vida.
-            </p>
+            <p class="max-w-3xl mx-auto text-blue-100 mb-6">Innovaciones pedagógicas y puntualidad impecable serán destacadas oficialmente.</p>
             <p class="font-bold text-xl text-yellow-400">¡Sigamos construyendo juntos la escuela que soñamos!</p>
             <p class="text-sm mt-4 text-blue-300">Dirección - Escuela Intercultural Kallfü Mapu 2026</p>
         </footer>
@@ -224,19 +225,15 @@
                 title: function(tooltipItems) {
                     const item = tooltipItems[0];
                     let label = item.chart.data.labels[item.dataIndex];
-                    if (Array.isArray(label)) {
-                        return label.join(' ');
-                    } else {
-                        return label;
-                    }
+                    return Array.isArray(label) ? label.join(' ') : label;
                 }
             }
         };
 
         const sellosLabels = [
-            "Participativa (Comunidad)", 
-            "Intercultural (Raíces)", 
-            "Comprometida (Diversidad)"
+            "Participativa", 
+            "Intercultural", 
+            "Comprometida"
         ].map(wrapLabel);
 
         const ctxSellos = document.getElementById('sellosChart').getContext('2d');
@@ -245,18 +242,9 @@
             data: {
                 labels: sellosLabels,
                 datasets: [{
-                    label: 'Importancia del Sello Institucional',
                     data: [100, 100, 100],
-                    backgroundColor: [
-                        'rgba(59, 130, 246, 0.7)',
-                        'rgba(245, 158, 11, 0.7)',
-                        'rgba(16, 185, 129, 0.7)'
-                    ],
-                    borderColor: [
-                        'rgba(59, 130, 246, 1)',
-                        'rgba(245, 158, 11, 1)',
-                        'rgba(16, 185, 129, 1)'
-                    ],
+                    backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(245, 158, 11, 0.7)', 'rgba(16, 185, 129, 0.7)'],
+                    borderColor: ['#3b82f6', '#f59e0b', '#10b981'],
                     borderWidth: 2
                 }]
             },
@@ -264,15 +252,15 @@
                 maintainAspectRatio: false,
                 scales: { r: { display: false } },
                 plugins: {
-                    legend: { position: 'bottom' },
+                    legend: { display: false },
                     tooltip: commonTooltipConfig
                 }
             }
         });
 
         const tiempoLabels = [
-            "Ingreso Puntual a Bloques", 
-            "2 Minutos de Retraso Constante"
+            "Puntualidad", 
+            "Retraso de 2 Min"
         ].map(wrapLabel);
 
         const ctxTiempo = document.getElementById('tiempoChart').getContext('2d');
@@ -281,59 +269,19 @@
             data: {
                 labels: tiempoLabels,
                 datasets: [{
-                    label: 'Minutos de Aprendizaje Perdidos por Mes',
+                    label: 'Minutos Mensuales',
                     data: [0, 800],
-                    backgroundColor: [
-                        'rgba(16, 185, 129, 0.8)',
-                        'rgba(239, 68, 68, 0.8)'
-                    ],
+                    backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(239, 68, 68, 0.8)'],
                     borderRadius: 8
                 }]
             },
             options: {
                 maintainAspectRatio: false,
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'Minutos Mensuales' }
-                    }
+                    y: { beginAtZero: true }
                 },
                 plugins: {
                     legend: { display: false },
-                    tooltip: commonTooltipConfig
-                }
-            }
-        });
-
-        const canalesLabels = [
-            "Correo Institucional Oficial", 
-            "Libreta de Comunicaciones", 
-            "Entrevista Presencial",
-            "WhatsApp Personal (Prohibido)"
-        ].map(wrapLabel);
-
-        const ctxCanales = document.getElementById('canalesChart').getContext('2d');
-        new Chart(ctxCanales, {
-            type: 'doughnut',
-            data: {
-                labels: canalesLabels,
-                datasets: [{
-                    data: [45, 40, 15, 0],
-                    backgroundColor: [
-                        'rgba(30, 58, 138, 0.8)',
-                        'rgba(59, 130, 246, 0.8)',
-                        'rgba(16, 185, 129, 0.8)',
-                        'rgba(239, 68, 68, 0.1)'
-                    ],
-                    borderColor: '#ffffff',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                cutout: '65%',
-                plugins: {
-                    legend: { position: 'right' },
                     tooltip: commonTooltipConfig
                 }
             }
