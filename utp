@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lineamientos Año Escolar 2026 - Escuela Kallfü Mapu</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-blue: #004B87; /* Azul Institucional */
+            --light-blue: #EAF2F8;
+            --text-dark: #333333;
+            --text-muted: #555555;
+            --bg-color: #F4F7F6;
+            --white: #FFFFFF;
+            --accent: #D4AF37; /* Toque cálido institucional */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--white);
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 4px solid var(--primary-blue);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background-color: var(--white);
+            border-left: 6px solid var(--primary-blue);
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            color: var(--primary-blue);
+            opacity: 0.8;
+            display: none;
+        }
+
+        @media(min-width: 768px) {
+            .welcome-icon { display: block; }
+        }
+
+        .welcome-content h2 {
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .welcome-content p {
+            font-family: 'Merriweather', serif;
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .welcome-content .signature {
+            font-weight: 600;
+            color: var(--primary-blue);
+            font-family: 'Inter', sans-serif;
+            margin-top: 1rem;
+        }
+
+        /* Grid Layout for Content */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: var(--primary-blue);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .card-icon {
+            background-color: var(--light-blue);
+            color: var(--primary-blue);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+        }
+
+        /* Lists inside cards */
+        ul {
+            list-style: none;
+        }
+
+        ul li {
+            margin-bottom: 0.8rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        ul li::before {
+            content: '\f105'; /* FontAwesome angle-right */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--primary-blue);
+        }
+
+        .highlight-date {
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        /* Distribution Table styling (simulated with flex) */
+        .staff-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .staff-item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed #ddd;
+            padding-bottom: 0.3rem;
+        }
+        
+        .staff-item:last-child {
+            border-bottom: none;
+        }
+
+        .staff-role {
+            font-weight: 600;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: var(--light-blue);
+            color: var(--primary-blue);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        footer p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        footer .intercultural-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Escuela Intercultural Kallfü Mapu</h1>
+        <p>Ñuñoa - Región Metropolitana</p>
+    </header>
+
+    <div class="container">
+        
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <div class="welcome-icon">
+                <i class="fa-solid fa-seedling"></i>
+            </div>
+            <div class="welcome-content">
+                <h2>Lineamientos Iniciales - Año Escolar 2026</h2>
+                <p>"Estimado equipo docente y asistentes de la educación: Les doy la más cordial bienvenida a este nuevo ciclo pedagógico. Nuestro compromiso con la educación pública e intercultural nos exige mantener un enfoque constante en la mejora continua y el bienestar integral de nuestras y nuestros estudiantes."</p>
+                <p>"Esta presentación resume los acuerdos, distribuciones y focos estratégicos para iniciar el año con claridad y propósito. Juntos, seguiremos construyendo una comunidad educativa inclusiva, innovadora y de excelencia."</p>
+                <div class="signature">
+                    Jefatura Técnica (UTP)<br>
+                    <span style="font-weight: 400; font-size: 0.9rem; color: var(--text-muted);">03 de Marzo, 2026</span>
+                </div>
+            </div>
+        </section>
+
+        <main class="grid">
+            
+            <!-- Card 1: Distribución Asistentes -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-users"></i></div>
+                    <h3>Distribución Asistentes de Aula</h3>
+                </div>
+                <div class="staff-list">
+                    <div class="staff-item"><span class="staff-role">NT1:</span> <span>Cecilia Espíndola</span></div>
+                    <div class="staff-item"><span class="staff-role">NT2:</span> <span>Yohana Oyarzún</span></div>
+                    <div class="staff-item"><span class="staff-role">1° Básico:</span> <span>Jocelyn Dúran</span></div>
+                    <div class="staff-item"><span class="staff-role">2° Básico:</span> <span>Rocío Moya</span></div>
+                </div>
+            </div>
+
+            <!-- Card 2: Distribución PIE -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-hands-holding-child"></i></div>
+                    <h3>Educadoras Diferenciales</h3>
+                </div>
+                <div class="staff-list">
+                    <div class="staff-item"><span class="staff-role">NT1 & NT2:</span> <span>Gabriela Leiva</span></div>
+                    <div class="staff-item"><span class="staff-role">1° & 2° Básico:</span> <span>Debora Maldonado</span></div>
+                    <div class="staff-item"><span class="staff-role">3° Básico:</span> <span>Tamara Ormazabal</span></div>
+                    <div class="staff-item"><span class="staff-role">4° Básico:</span> <span>Almendra Contarini</span></div>
+                    <div class="staff-item"><span class="staff-role">5° & 6° Básico:</span> <span>Ivette Campos</span></div>
+                    <div class="staff-item"><span class="staff-role">7° Básico:</span> <span>NN</span></div>
+                    <div class="staff-item"><span class="staff-role">8° Básico:</span> <span>Natalia Contreras</span></div>
+                </div>
+            </div>
+
+            <!-- Card 3: Comienzo de Año -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                    <h3>Comienzo del Año Pedagógico</h3>
+                </div>
+                <ul>
+                    <li><span class="highlight-date">04 de marzo:</span> Actividades del primer día de clases.</li>
+                    <li><span class="highlight-date">05 de marzo:</span> Presentación de asignaturas y metas del primer semestre.</li>
+                    <li><span class="highlight-date">06 al 13 de marzo:</span> Reconstitución de saberes e identificación de objetivos descendidos.</li>
+                    <li><span class="highlight-date">16 de marzo:</span> Inicio oficial del año académico curricular.</li>
+                </ul>
+            </div>
+
+            <!-- Card 4: Evaluaciones DIA -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                    <h3>Diagnóstico Integral de Aprendizajes (DIA)</h3>
+                </div>
+                <p><strong>Aplicación:</strong> 10 al 13 de marzo</p>
+                <br>
+                <strong>Área Académica:</strong>
+                <ul>
+                    <li>Lectura: 2° a 8° Básico</li>
+                    <li>Escritura: 5° y 6° Básico</li>
+                    <li>Matemática: 3° a 8° Básico</li>
+                </ul>
+                <strong>Área Socioemocional:</strong>
+                <ul>
+                    <li>Actividad Evaluativa: 1° a 3° Básico</li>
+                    <li>Cuestionario Aprendizaje: 4° a 8° Básico</li>
+                    <li>Cuestionario Convivencia: 4° a 8° Básico</li>
+                </ul>
+            </div>
+
+            <!-- Card 5: Plataformas y Tecnología -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                    <h3>Plataformas Digitales</h3>
+                </div>
+                <strong>Dashboard Institucional</strong>
+                <p>Acceso vía intranet (nueva web). Cuenta con factor de doble verificación mediante código numérico al correo electrónico institucional.</p>
+                <br>
+                <strong>Libro Digital KIMCHE</strong>
+                <ul>
+                    <li>Registro obligatorio de evaluaciones formativas.</li>
+                    <li>Registro habitual de 2 evaluaciones sumativas.</li>
+                    <li>Lenguaje, Literatura y Lengua Indígena: 3 notas sumativas (la 3ra es promedio del plan lector).</li>
+                    <li>Orientación: Requiere planificación, leccionario digital y 2 evaluaciones cualitativas.</li>
+                </ul>
+            </div>
+
+            <!-- Card 6: Acompañamiento y ATES -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+                    <h3>Acompañamiento y Redes</h3>
+                </div>
+                <strong>Acompañamiento Docente</strong>
+                <p>Meta: 2 observaciones al aula por semestre (1 coordinada, 1 sin aviso previo).</p>
+                <br>
+                <strong>Apoyo ATE</strong>
+                <ul>
+                    <li><strong>Primero LEE:</strong> Focalizada en NT2 y 1° Básico (3er año consecutivo).</li>
+                    <li><strong>Fundación Astoreca:</strong> Área de matemáticas para 1° y 2° Básico.</li>
+                </ul>
+            </div>
+
+            <!-- Card 7: Directrices Adicionales -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                    <h3>Directrices Institucionales</h3>
+                </div>
+                <strong>Horario Primeros Días</strong>
+                <p>Los tres primeros días retiro a las 13:45. Se modificará horario del jueves para cubrir asignaturas post-almuerzo.</p>
+                <br>
+                <strong>Practicantes</strong>
+                <p>Cupo limitado por semestre con criterios específicos para no sobrecargar a los equipos de aula.</p>
+                <br>
+                <strong>Efemérides</strong>
+                <p>Foco pedagógico transversal. Se integrarán en actividades de aula regulares para evitar agobio laboral.</p>
+                <div class="tag"><i class="fa-solid fa-earth-americas"></i> Enfoque Intercultural</div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer>
+        <i class="fa-solid fa-sun intercultural-icon"></i>
+        <h2>Escuela Intercultural Kallfü Mapu</h2>
+        <p>Equipo Pedagógico - Año Escolar 2026</p>
+        <p style="margin-top: 10px; font-size: 0.8rem;">Innovación, Inclusión y Excelencia Educativa</p>
+    </footer>
+
+</body>
+</html>
