@@ -18,6 +18,7 @@
             --bg-color: #F4F7F6;
             --white: #FFFFFF;
             --accent: #D4AF37; /* Toque cálido institucional */
+            --pale-red: #E57373; /* Rojo pálido para iconos */
         }
 
         * {
@@ -81,7 +82,7 @@
 
         .welcome-icon {
             font-size: 4rem;
-            color: var(--primary-blue);
+            color: var(--pale-red);
             opacity: 0.8;
             display: none;
         }
@@ -145,14 +146,46 @@
         .card-header {
             display: flex;
             align-items: center;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 1rem;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .card-header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .chevron {
+            color: var(--pale-red);
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .card.active .chevron {
+            transform: rotate(180deg);
+        }
+
+        .card-content {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            padding-top: 0;
+            margin-top: 0;
+            border-top: 1px solid transparent;
+            transition: max-height 0.4s ease, opacity 0.4s ease, margin-top 0.4s ease, padding-top 0.4s ease;
+        }
+
+        .card.active .card-content {
+            max-height: 800px; /* Espacio suficiente para que el contenido se expanda */
+            opacity: 1;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+            border-top: 1px solid #eee;
         }
 
         .card-icon {
             background-color: var(--light-blue);
-            color: var(--primary-blue);
+            color: var(--pale-red);
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -185,7 +218,7 @@
             font-weight: 900;
             position: absolute;
             left: 0;
-            color: var(--primary-blue);
+            color: var(--pale-red);
         }
 
         .highlight-date {
@@ -226,6 +259,11 @@
             margin-top: 1rem;
         }
 
+        .tag i {
+            color: var(--pale-red);
+            margin-right: 0.3rem;
+        }
+
         /* Footer */
         footer {
             background-color: var(--primary-blue);
@@ -243,7 +281,7 @@
         footer .intercultural-icon {
             font-size: 2rem;
             margin-bottom: 1rem;
-            color: var(--accent);
+            color: var(--pale-red);
         }
 
     </style>
@@ -276,120 +314,155 @@
             
             <!-- Card 1: Distribución Asistentes -->
             <div class="card">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-users"></i></div>
-                    <h3>Distribución Asistentes de Aula</h3>
+                <div class="card-header" onclick="this.parentElement.classList.toggle('active')">
+                    <div class="card-header-left">
+                        <div class="card-icon"><i class="fa-solid fa-users"></i></div>
+                        <h3>Distribución Asistentes de Aula</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-down chevron"></i>
                 </div>
-                <div class="staff-list">
-                    <div class="staff-item"><span class="staff-role">NT1:</span> <span>Cecilia Espíndola</span></div>
-                    <div class="staff-item"><span class="staff-role">NT2:</span> <span>Yohana Oyarzún</span></div>
-                    <div class="staff-item"><span class="staff-role">1° Básico:</span> <span>Jocelyn Dúran</span></div>
-                    <div class="staff-item"><span class="staff-role">2° Básico:</span> <span>Rocío Moya</span></div>
+                <div class="card-content">
+                    <div class="staff-list">
+                        <div class="staff-item"><span class="staff-role">NT1:</span> <span>Cecilia Espíndola</span></div>
+                        <div class="staff-item"><span class="staff-role">NT2:</span> <span>Yohana Oyarzún</span></div>
+                        <div class="staff-item"><span class="staff-role">1° Básico:</span> <span>Jocelyn Dúran</span></div>
+                        <div class="staff-item"><span class="staff-role">2° Básico:</span> <span>Rocío Moya</span></div>
+                    </div>
                 </div>
             </div>
 
             <!-- Card 2: Distribución PIE -->
             <div class="card">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-hands-holding-child"></i></div>
-                    <h3>Educadoras Diferenciales</h3>
+                <div class="card-header" onclick="this.parentElement.classList.toggle('active')">
+                    <div class="card-header-left">
+                        <div class="card-icon"><i class="fa-solid fa-hands-holding-child"></i></div>
+                        <h3>Educadoras Diferenciales</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-down chevron"></i>
                 </div>
-                <div class="staff-list">
-                    <div class="staff-item"><span class="staff-role">NT1 & NT2:</span> <span>Gabriela Leiva</span></div>
-                    <div class="staff-item"><span class="staff-role">1° & 2° Básico:</span> <span>Debora Maldonado</span></div>
-                    <div class="staff-item"><span class="staff-role">3° Básico:</span> <span>Tamara Ormazabal</span></div>
-                    <div class="staff-item"><span class="staff-role">4° Básico:</span> <span>Almendra Contarini</span></div>
-                    <div class="staff-item"><span class="staff-role">5° & 6° Básico:</span> <span>Ivette Campos</span></div>
-                    <div class="staff-item"><span class="staff-role">7° Básico:</span> <span>NN</span></div>
-                    <div class="staff-item"><span class="staff-role">8° Básico:</span> <span>Natalia Contreras</span></div>
+                <div class="card-content">
+                    <div class="staff-list">
+                        <div class="staff-item"><span class="staff-role">NT1 & NT2:</span> <span>Gabriela Leiva</span></div>
+                        <div class="staff-item"><span class="staff-role">1° & 2° Básico:</span> <span>Debora Maldonado</span></div>
+                        <div class="staff-item"><span class="staff-role">3° Básico:</span> <span>Tamara Ormazabal</span></div>
+                        <div class="staff-item"><span class="staff-role">4° Básico:</span> <span>Almendra Contarini</span></div>
+                        <div class="staff-item"><span class="staff-role">5° & 6° Básico:</span> <span>Ivette Campos</span></div>
+                        <div class="staff-item"><span class="staff-role">7° Básico:</span> <span>NN</span></div>
+                        <div class="staff-item"><span class="staff-role">8° Básico:</span> <span>Natalia Contreras</span></div>
+                    </div>
                 </div>
             </div>
 
             <!-- Card 3: Comienzo de Año -->
             <div class="card">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-calendar-days"></i></div>
-                    <h3>Comienzo del Año Pedagógico</h3>
+                <div class="card-header" onclick="this.parentElement.classList.toggle('active')">
+                    <div class="card-header-left">
+                        <div class="card-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                        <h3>Comienzo del Año Pedagógico</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-down chevron"></i>
                 </div>
-                <ul>
-                    <li><span class="highlight-date">04 de marzo:</span> Actividades del primer día de clases.</li>
-                    <li><span class="highlight-date">05 de marzo:</span> Presentación de asignaturas y metas del primer semestre.</li>
-                    <li><span class="highlight-date">06 al 13 de marzo:</span> Reconstitución de saberes e identificación de objetivos descendidos.</li>
-                    <li><span class="highlight-date">16 de marzo:</span> Inicio oficial del año académico curricular.</li>
-                </ul>
+                <div class="card-content">
+                    <ul>
+                        <li><span class="highlight-date">04 de marzo:</span> Actividades del primer día de clases.</li>
+                        <li><span class="highlight-date">05 de marzo:</span> Presentación de asignaturas y metas del primer semestre.</li>
+                        <li><span class="highlight-date">06 al 13 de marzo:</span> Reconstitución de saberes e identificación de objetivos descendidos.</li>
+                        <li><span class="highlight-date">16 de marzo:</span> Inicio oficial del año académico curricular.</li>
+                    </ul>
+                </div>
             </div>
 
             <!-- Card 4: Evaluaciones DIA -->
             <div class="card">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-chart-pie"></i></div>
-                    <h3>Diagnóstico Integral de Aprendizajes (DIA)</h3>
+                <div class="card-header" onclick="this.parentElement.classList.toggle('active')">
+                    <div class="card-header-left">
+                        <div class="card-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                        <h3>Diagnóstico Integral de Aprendizajes (DIA)</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-down chevron"></i>
                 </div>
-                <p><strong>Aplicación:</strong> 10 al 13 de marzo</p>
-                <br>
-                <strong>Área Académica:</strong>
-                <ul>
-                    <li>Lectura: 2° a 8° Básico</li>
-                    <li>Escritura: 5° y 6° Básico</li>
-                    <li>Matemática: 3° a 8° Básico</li>
-                </ul>
-                <strong>Área Socioemocional:</strong>
-                <ul>
-                    <li>Actividad Evaluativa: 1° a 3° Básico</li>
-                    <li>Cuestionario Aprendizaje: 4° a 8° Básico</li>
-                    <li>Cuestionario Convivencia: 4° a 8° Básico</li>
-                </ul>
+                <div class="card-content">
+                    <p><strong>Aplicación:</strong> 10 al 13 de marzo</p>
+                    <br>
+                    <strong>Área Académica:</strong>
+                    <ul>
+                        <li>Lectura: 2° a 8° Básico</li>
+                        <li>Escritura: 5° y 6° Básico</li>
+                        <li>Matemática: 3° a 8° Básico</li>
+                    </ul>
+                    <strong>Área Socioemocional:</strong>
+                    <ul>
+                        <li>Actividad Evaluativa: 1° a 3° Básico</li>
+                        <li>Cuestionario Aprendizaje: 4° a 8° Básico</li>
+                        <li>Cuestionario Convivencia: 4° a 8° Básico</li>
+                    </ul>
+                </div>
             </div>
 
             <!-- Card 5: Plataformas y Tecnología -->
             <div class="card">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-laptop-code"></i></div>
-                    <h3>Plataformas Digitales</h3>
+                <div class="card-header" onclick="this.parentElement.classList.toggle('active')">
+                    <div class="card-header-left">
+                        <div class="card-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                        <h3>Plataformas Digitales</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-down chevron"></i>
                 </div>
-                <strong>Dashboard Institucional</strong>
-                <p>Acceso vía intranet (nueva web). Cuenta con factor de doble verificación mediante código numérico al correo electrónico institucional.</p>
-                <br>
-                <strong>Libro Digital KIMCHE</strong>
-                <ul>
-                    <li>Registro obligatorio de evaluaciones formativas.</li>
-                    <li>Registro habitual de 2 evaluaciones sumativas.</li>
-                    <li>Lenguaje, Literatura y Lengua Indígena: 3 notas sumativas (la 3ra es promedio del plan lector).</li>
-                    <li>Orientación: Requiere planificación, leccionario digital y 2 evaluaciones cualitativas.</li>
-                </ul>
+                <div class="card-content">
+                    <strong>Dashboard Institucional</strong>
+                    <p>Acceso vía intranet (nueva web). Cuenta con factor de doble verificación mediante código numérico al correo electrónico institucional.</p>
+                    <br>
+                    <strong>Libro Digital KIMCHE</strong>
+                    <ul>
+                        <li>Registro obligatorio de evaluaciones formativas.</li>
+                        <li>Registro habitual de 2 evaluaciones sumativas.</li>
+                        <li>Lenguaje, Literatura y Lengua Indígena: 3 notas sumativas (la 3ra es promedio del plan lector).</li>
+                        <li>Orientación: Requiere planificación, leccionario digital y 2 evaluaciones cualitativas.</li>
+                    </ul>
+                </div>
             </div>
 
             <!-- Card 6: Acompañamiento y ATES -->
             <div class="card">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
-                    <h3>Acompañamiento y Redes</h3>
+                <div class="card-header" onclick="this.parentElement.classList.toggle('active')">
+                    <div class="card-header-left">
+                        <div class="card-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+                        <h3>Acompañamiento y Redes</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-down chevron"></i>
                 </div>
-                <strong>Acompañamiento Docente</strong>
-                <p>Meta: 2 observaciones al aula por semestre (1 coordinada, 1 sin aviso previo).</p>
-                <br>
-                <strong>Apoyo ATE</strong>
-                <ul>
-                    <li><strong>Primero LEE:</strong> Focalizada en NT2 y 1° Básico (3er año consecutivo).</li>
-                    <li><strong>Fundación Astoreca:</strong> Área de matemáticas para 1° y 2° Básico.</li>
-                </ul>
+                <div class="card-content">
+                    <strong>Acompañamiento Docente</strong>
+                    <p>Meta: 2 observaciones al aula por semestre (1 coordinada, 1 sin aviso previo).</p>
+                    <br>
+                    <strong>Apoyo ATE</strong>
+                    <ul>
+                        <li><strong>Primero LEE:</strong> Focalizada en NT2 y 1° Básico (3er año consecutivo).</li>
+                        <li><strong>Fundación Astoreca:</strong> Área de matemáticas para 1° y 2° Básico.</li>
+                    </ul>
+                </div>
             </div>
 
             <!-- Card 7: Directrices Adicionales -->
             <div class="card">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fa-solid fa-clipboard-check"></i></div>
-                    <h3>Directrices Institucionales</h3>
+                <div class="card-header" onclick="this.parentElement.classList.toggle('active')">
+                    <div class="card-header-left">
+                        <div class="card-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                        <h3>Directrices Institucionales</h3>
+                    </div>
+                    <i class="fa-solid fa-chevron-down chevron"></i>
                 </div>
-                <strong>Horario Primeros Días</strong>
-                <p>Los tres primeros días retiro a las 13:45. Se modificará horario del jueves para cubrir asignaturas post-almuerzo.</p>
-                <br>
-                <strong>Practicantes</strong>
-                <p>Cupo limitado por semestre con criterios específicos para no sobrecargar a los equipos de aula.</p>
-                <br>
-                <strong>Efemérides</strong>
-                <p>Foco pedagógico transversal. Se integrarán en actividades de aula regulares para evitar agobio laboral.</p>
-                <div class="tag"><i class="fa-solid fa-earth-americas"></i> Enfoque Intercultural</div>
+                <div class="card-content">
+                    <strong>Horario Primeros Días</strong>
+                    <p>Los tres primeros días retiro a las 13:45. Se modificará horario del jueves para cubrir asignaturas post-almuerzo.</p>
+                    <br>
+                    <strong>Practicantes</strong>
+                    <p>Cupo limitado por semestre con criterios específicos para no sobrecargar a los equipos de aula.</p>
+                    <br>
+                    <strong>Efemérides</strong>
+                    <p>Foco pedagógico transversal. Se integrarán en actividades de aula regulares para evitar agobio laboral.</p>
+                    <div class="tag"><i class="fa-solid fa-earth-americas"></i> Enfoque Intercultural</div>
+                </div>
             </div>
 
         </main>
@@ -399,7 +472,7 @@
         <i class="fa-solid fa-sun intercultural-icon"></i>
         <h2>Escuela Intercultural Kallfü Mapu</h2>
         <p>Equipo Pedagógico - Año Escolar 2026</p>
-        <p style="margin-top: 10px; font-size: 0.8rem;">Innovación, Inclusión y Excelencia Educativa</p>
+        <p style="margin-top: 10px; font-size: 0.8rem;">Participación, Inclusión y Excelencia Educativa</p>
     </footer>
 
 </body>
