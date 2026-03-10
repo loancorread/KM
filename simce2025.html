@@ -1,252 +1,483 @@
-import React from 'react';
-import { 
-  TrendingUp, 
-  BookOpen, 
-  Calculator, 
-  Users, 
-  Heart, 
-  ShieldCheck, 
-  Award,
-  ArrowUpRight,
-  ArrowDownRight,
-  Minus,
-  CheckCircle
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados SIMCE 2025 - Escuela Kallfü Mapu</title>
+    
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons (CDN) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-const App = () => {
-  const institucionalBlue = "#1e3a8a"; // Azul Kallfü Mapu
+    <style>
+        /* Importar fuente similar a la original */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body {
+            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen p-4 md:p-10">
 
-  const simceData = [
-    { curso: "4° Básico", asignatura: "Lenguaje y Comunicación", actual: 293, anterior: 273, icon: <BookOpen className="w-6 h-6" /> },
-    { curso: "4° Básico", asignatura: "Matemática", actual: 270, anterior: 256, icon: <Calculator className="w-6 h-6" /> },
-    { curso: "8° Básico", asignatura: "Lenguaje y Comunicación", actual: 236, anterior: 232, icon: <BookOpen className="w-6 h-6" /> },
-    { curso: "8° Básico", asignatura: "Matemática", actual: 254, anterior: 236, icon: <Calculator className="w-6 h-6" /> },
-  ];
-
-  const idpsDetailed = [
-    {
-      titulo: "Autoestima académica y motivación escolar",
-      actual: 80,
-      anterior: 72,
-      color: "bg-blue-700",
-      icon: <Award className="w-6 h-6" />,
-      dimensiones: [
-        { nombre: "Autopercepción y autovaloración académica", actual: 79, anterior: 70 },
-        { nombre: "Motivación escolar", actual: 82, anterior: 75 }
-      ]
-    },
-    {
-      titulo: "Clima de convivencia escolar",
-      actual: 75,
-      anterior: 71,
-      color: "bg-cyan-700",
-      icon: <Users className="w-6 h-6" />,
-      dimensiones: [
-        { nombre: "Ambiente de respeto", actual: 69, anterior: 66 },
-        { nombre: "Ambiente organizado", actual: 81, anterior: 77 },
-        { nombre: "Ambiente seguro", actual: 74, anterior: 70 }
-      ]
-    },
-    {
-      titulo: "Participación y formación ciudadana",
-      actual: 83,
-      anterior: 75,
-      color: "bg-indigo-700",
-      icon: <ShieldCheck className="w-6 h-6" />,
-      dimensiones: [
-        { nombre: "Participación", actual: 79, anterior: 76 },
-        { nombre: "Vida democrática", actual: 86, anterior: 73 },
-        { nombre: "Sentido de pertenencia", actual: 84, anterior: 76 }
-      ]
-    },
-    {
-      titulo: "Hábitos de vida saludable",
-      actual: 73,
-      anterior: 73,
-      color: "bg-emerald-700",
-      icon: <Heart className="w-6 h-6" />,
-      dimensiones: [
-        { nombre: "Hábitos alimenticios", actual: 72, anterior: 74 },
-        { nombre: "Hábitos de vida activa", actual: 70, anterior: 65 },
-        { nombre: "Hábitos de autocuidado", actual: 78, anterior: 80 }
-      ]
-    }
-  ];
-
-  const DeltaTag = ({ actual, anterior }) => {
-    const diff = actual - anterior;
-    if (diff > 0) return (
-      <span className="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
-        <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5" /> +{diff}
-      </span>
-    );
-    if (diff < 0) return (
-      <span className="flex items-center gap-1 text-rose-700 font-extrabold text-sm md:text-base bg-rose-100 px-3 py-1 rounded-full shadow-sm">
-        <ArrowDownRight className="w-4 h-4 md:w-5 md:h-5" /> {diff}
-      </span>
-    );
-    return (
-      <span className="flex items-center gap-1 text-slate-500 font-bold text-sm md:text-base bg-slate-100 px-3 py-1 rounded-full shadow-sm">
-        <Minus className="w-4 h-4 md:w-5 md:h-5" /> 0
-      </span>
-    );
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-10 font-sans text-slate-800">
-      {/* Encabezado Institucional */}
-      <header className="max-w-6xl mx-auto mb-12 flex flex-col md:flex-row justify-between items-center border-b-4 pb-6" style={{ borderColor: institucionalBlue }}>
-        <div className="text-center md:text-left mb-4 md:mb-0">
-          <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-2" style={{ color: institucionalBlue }}>
-            Resultados SIMCE 2025
-          </h1>
-          <p className="text-xl text-slate-600 font-semibold">Escuela Intercultural Kallfü Mapu</p>
+    <!-- Encabezado Institucional -->
+    <header class="max-w-6xl mx-auto mb-12 flex flex-col md:flex-row justify-between items-center border-b-4 pb-6 border-[#1e3a8a]">
+        <div class="text-center md:text-left mb-4 md:mb-0">
+            <h1 class="text-4xl md:text-5xl font-black tracking-tight mb-2 text-[#1e3a8a]">
+                Resultados SIMCE 2025
+            </h1>
+            <p class="text-xl text-slate-600 font-semibold">Escuela Intercultural Kallfü Mapu</p>
         </div>
-        <div className="bg-white px-6 py-3 rounded-full text-slate-700 font-bold text-sm md:text-base uppercase tracking-widest border-2 border-slate-200 shadow-sm">
-          Reporte Técnico para Gestión Directiva
+        <div class="bg-white px-6 py-3 rounded-full text-slate-700 font-bold text-sm md:text-base uppercase tracking-widest border-2 border-slate-200 shadow-sm">
+            Reporte Técnico para Gestión Directiva
         </div>
-      </header>
+    </header>
 
-      <main className="max-w-6xl mx-auto space-y-16">
+    <main class="max-w-6xl mx-auto space-y-16">
         
-        {/* SECCIÓN 1: SIMCE ACADÉMICO */}
+        <!-- SECCIÓN 1: SIMCE ACADÉMICO -->
         <section>
-          <div className="flex items-center gap-4 mb-8 border-l-8 pl-4 rounded-sm" style={{ borderColor: institucionalBlue }}>
-            <TrendingUp className="w-10 h-10" style={{ color: institucionalBlue }} />
-            <h2 className="text-3xl font-black text-slate-800">Rendimiento en Pruebas de Aprendizaje</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {simceData.map((item, idx) => (
-              <div key={idx} className="bg-white rounded-3xl p-6 border-2 border-slate-200 relative overflow-hidden group hover:border-blue-300 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between">
-                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110">
-                  {React.cloneElement(item.icon, { className: "w-24 h-24" })}
-                </div>
-                
-                <div>
-                  <p className="text-sm font-black text-slate-400 uppercase tracking-wider mb-2">{item.curso}</p>
-                  <h3 className="text-lg font-bold text-slate-700 leading-tight mb-6 min-h-[48px]">{item.asignatura}</h3>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-6xl font-black text-slate-900 tracking-tighter">{item.actual}</div>
-                    <DeltaTag actual={item.actual} anterior={item.anterior} />
-                  </div>
-                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 mt-4">
-                    <p className="text-sm text-slate-500 font-medium">
-                      Año anterior: <span className="font-bold text-slate-700 text-base">{item.anterior} pts</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* SECCIÓN 2: IDPS DETALLADO */}
-        <section>
-          <div className="flex items-center gap-4 mb-8 border-l-8 pl-4 rounded-sm" style={{ borderColor: institucionalBlue }}>
-            <Users className="w-10 h-10" style={{ color: institucionalBlue }} />
-            <h2 className="text-3xl font-black text-slate-800">Indicadores de Desarrollo Personal y Social (IDPS)</h2>
-          </div>
-
-          <div className="grid grid-cols-1 gap-10">
-            {idpsDetailed.map((cat, idx) => (
-              <div key={idx} className="bg-white border-2 border-slate-200 rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-shadow">
-                {/* Cabecera de Categoría */}
-                <div className={`${cat.color} p-6 md:p-8 text-white flex flex-col md:flex-row md:items-center justify-between gap-6`}>
-                  <div className="flex items-center gap-5">
-                    <div className="bg-white/20 p-4 rounded-2xl backdrop-blur-sm shadow-inner">
-                      {React.cloneElement(cat.icon, { className: "w-8 h-8 md:w-10 md:h-10" })}
+            <div class="flex items-center gap-4 mb-8 border-l-8 pl-4 rounded-sm border-[#1e3a8a]">
+                <i data-lucide="trending-up" class="w-10 h-10 text-[#1e3a8a]"></i>
+                <h2 class="text-3xl font-black text-slate-800">Rendimiento en Pruebas de Aprendizaje</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Tarjeta 1 -->
+                <div class="bg-white rounded-3xl p-6 border-2 border-slate-200 relative overflow-hidden group hover:border-blue-300 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110">
+                        <i data-lucide="book-open" class="w-24 h-24"></i>
                     </div>
                     <div>
-                      <h3 className="text-2xl md:text-3xl font-black">{cat.titulo}</h3>
-                      <p className="text-white/80 text-base font-semibold mt-1">Indicador General de la Categoría</p>
+                        <p class="text-sm font-black text-slate-400 uppercase tracking-wider mb-2">4° Básico</p>
+                        <h3 class="text-lg font-bold text-slate-700 leading-tight mb-6 min-h-[48px]">Lenguaje y Comunicación</h3>
                     </div>
-                  </div>
-                  
-                  <div className="bg-white/10 p-4 rounded-3xl flex items-center justify-around gap-6 backdrop-blur-md border border-white/30 shadow-lg min-w-[280px]">
-                    <div className="text-center">
-                      <p className="text-xs md:text-sm uppercase font-black text-white/70 tracking-widest mb-1">Puntaje</p>
-                      <p className="text-5xl md:text-6xl font-black leading-none tracking-tighter">{cat.actual}</p>
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-6xl font-black text-slate-900 tracking-tighter">293</div>
+                            <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +20
+                            </span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mt-4">
+                            <p class="text-sm text-slate-500 font-medium">Año anterior: <span class="font-bold text-slate-700 text-base">273 pts</span></p>
+                        </div>
                     </div>
-                    <div className="h-16 w-1 bg-white/20 rounded-full"></div>
-                    <div className="text-center flex flex-col justify-center items-center">
-                      <p className="text-xs md:text-sm uppercase font-black text-white/70 tracking-widest mb-2">Evolución</p>
-                      <DeltaTag actual={cat.actual} anterior={cat.anterior} />
-                    </div>
-                  </div>
                 </div>
 
-                {/* Dimensiones Detalladas */}
-                <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 bg-slate-50/50">
-                  {cat.dimensiones.map((dim, dIdx) => (
-                    <div key={dIdx} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors">
-                      <div className="flex justify-between items-start mb-4 min-h-[48px]">
-                        <h4 className="text-base md:text-lg font-bold text-slate-700 pr-4 leading-tight">{dim.nombre}</h4>
-                        <DeltaTag actual={dim.actual} anterior={dim.anterior} />
-                      </div>
-                      
-                      <div className="flex items-baseline gap-2 mt-4">
-                        <span className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">{dim.actual}</span>
-                        <span className="text-slate-400 text-sm font-bold uppercase tracking-widest">puntos</span>
-                      </div>
-                      
-                      {/* Visual Progress Bar */}
-                      <div className="mt-5 h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                        <div 
-                          className={`h-full ${cat.color} transition-all duration-1000 rounded-full`}
-                          style={{ width: `${dim.actual}%` }}
-                        ></div>
-                      </div>
+                <!-- Tarjeta 2 -->
+                <div class="bg-white rounded-3xl p-6 border-2 border-slate-200 relative overflow-hidden group hover:border-blue-300 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110">
+                        <i data-lucide="calculator" class="w-24 h-24"></i>
                     </div>
-                  ))}
+                    <div>
+                        <p class="text-sm font-black text-slate-400 uppercase tracking-wider mb-2">4° Básico</p>
+                        <h3 class="text-lg font-bold text-slate-700 leading-tight mb-6 min-h-[48px]">Matemática</h3>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-6xl font-black text-slate-900 tracking-tighter">270</div>
+                            <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +14
+                            </span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mt-4">
+                            <p class="text-sm text-slate-500 font-medium">Año anterior: <span class="font-bold text-slate-700 text-base">256 pts</span></p>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
 
-        {/* Resumen Ejecutivo para Reunión */}
-        <section className="bg-slate-900 rounded-[3rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full -mr-48 -mt-48 blur-3xl"></div>
-          <div className="relative z-10">
-            <h3 className="text-3xl font-black mb-8 flex items-center gap-3">
-              <CheckCircle className="text-blue-400 w-8 h-8" />
-              Puntos Clave para el Análisis Directivo
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-              <div className="space-y-4 bg-white/5 p-6 rounded-3xl border border-white/10">
-                <p className="text-blue-400 font-black text-base uppercase tracking-widest">Liderazgo Académico</p>
-                <p className="text-slate-200 text-base md:text-lg leading-relaxed">
-                  El incremento de <strong className="text-white text-xl">+20 puntos</strong> en Lenguaje de 4° Básico es el hito pedagógico del año, validando las estrategias de lectoescritura.
-                </p>
-              </div>
-              <div className="space-y-4 bg-white/5 p-6 rounded-3xl border border-white/10">
-                <p className="text-blue-400 font-black text-base uppercase tracking-widest">Cultura Escolar</p>
-                <p className="text-slate-200 text-base md:text-lg leading-relaxed">
-                  La dimensión <strong className="text-white">"Vida Democrática"</strong> <strong className="text-emerald-400 text-xl">(+13 pts)</strong> refleja el éxito del enfoque intercultural y la participación estudiantil.
-                </p>
-              </div>
-              <div className="space-y-4 bg-white/5 p-6 rounded-3xl border border-white/10">
-                <p className="text-blue-400 font-black text-base uppercase tracking-widest">Desafío 2026</p>
-                <p className="text-slate-200 text-base md:text-lg leading-relaxed">
-                  Los <strong className="text-white">Hábitos Alimenticios</strong> muestran un leve descenso <strong className="text-rose-400 text-xl">(-2 pts)</strong>, sugiriendo la necesidad de reforzar este aspecto.
-                </p>
-              </div>
+                <!-- Tarjeta 3 -->
+                <div class="bg-white rounded-3xl p-6 border-2 border-slate-200 relative overflow-hidden group hover:border-blue-300 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110">
+                        <i data-lucide="book-open" class="w-24 h-24"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-black text-slate-400 uppercase tracking-wider mb-2">8° Básico</p>
+                        <h3 class="text-lg font-bold text-slate-700 leading-tight mb-6 min-h-[48px]">Lenguaje y Comunicación</h3>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-6xl font-black text-slate-900 tracking-tighter">236</div>
+                            <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +4
+                            </span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mt-4">
+                            <p class="text-sm text-slate-500 font-medium">Año anterior: <span class="font-bold text-slate-700 text-base">232 pts</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 4 -->
+                <div class="bg-white rounded-3xl p-6 border-2 border-slate-200 relative overflow-hidden group hover:border-blue-300 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110">
+                        <i data-lucide="calculator" class="w-24 h-24"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-black text-slate-400 uppercase tracking-wider mb-2">8° Básico</p>
+                        <h3 class="text-lg font-bold text-slate-700 leading-tight mb-6 min-h-[48px]">Matemática</h3>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-6xl font-black text-slate-900 tracking-tighter">254</div>
+                            <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +18
+                            </span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mt-4">
+                            <p class="text-sm text-slate-500 font-medium">Año anterior: <span class="font-bold text-slate-700 text-base">236 pts</span></p>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </section>
-      </main>
 
-      <footer className="max-w-6xl mx-auto mt-20 pt-8 border-t-2 border-slate-200 text-center">
-        <p className="text-slate-500 text-base font-semibold">
-          Equipo Directivo • Escuela Kallfü Mapu • SIMCE 2025
+        <!-- SECCIÓN 2: IDPS DETALLADO -->
+        <section>
+            <div class="flex items-center gap-4 mb-8 border-l-8 pl-4 rounded-sm border-[#1e3a8a]">
+                <i data-lucide="users" class="w-10 h-10 text-[#1e3a8a]"></i>
+                <h2 class="text-3xl font-black text-slate-800">Indicadores de Desarrollo Personal y Social (IDPS)</h2>
+            </div>
+
+            <div class="grid grid-cols-1 gap-10">
+                
+                <!-- IDPS 1: Autoestima -->
+                <div class="bg-white border-2 border-slate-200 rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-shadow">
+                    <div class="bg-blue-700 p-6 md:p-8 text-white flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div class="flex items-center gap-5">
+                            <div class="bg-white/20 p-4 rounded-2xl backdrop-blur-sm shadow-inner">
+                                <i data-lucide="award" class="w-8 h-8 md:w-10 md:h-10"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl md:text-3xl font-black">Autoestima académica y motivación escolar</h3>
+                                <p class="text-white/80 text-base font-semibold mt-1">Indicador General de la Categoría</p>
+                            </div>
+                        </div>
+                        <div class="bg-white/10 p-4 rounded-3xl flex items-center justify-around gap-6 backdrop-blur-md border border-white/30 shadow-lg min-w-[280px]">
+                            <div class="text-center">
+                                <p class="text-xs md:text-sm uppercase font-black text-white/70 tracking-widest mb-1">Puntaje</p>
+                                <p class="text-5xl md:text-6xl font-black leading-none tracking-tighter">80</p>
+                            </div>
+                            <div class="h-16 w-1 bg-white/20 rounded-full"></div>
+                            <div class="text-center flex flex-col justify-center items-center">
+                                <p class="text-xs md:text-sm uppercase font-black text-white/70 tracking-widest mb-2">Evolución</p>
+                                <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +8
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Dimensiones -->
+                    <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 bg-slate-50/50">
+                        <!-- Dim 1 -->
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors">
+                            <div class="flex justify-between items-start mb-4 min-h-[48px]">
+                                <h4 class="text-base md:text-lg font-bold text-slate-700 pr-4 leading-tight">Autopercepción y autovaloración académica</h4>
+                                <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +9
+                                </span>
+                            </div>
+                            <div class="flex items-baseline gap-2 mt-4">
+                                <span class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">79</span>
+                                <span class="text-slate-400 text-sm font-bold uppercase tracking-widest">puntos</span>
+                            </div>
+                            <div class="mt-5 h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                <div class="h-full bg-blue-700 rounded-full" style="width: 79%"></div>
+                            </div>
+                        </div>
+                        <!-- Dim 2 -->
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors">
+                            <div class="flex justify-between items-start mb-4 min-h-[48px]">
+                                <h4 class="text-base md:text-lg font-bold text-slate-700 pr-4 leading-tight">Motivación escolar</h4>
+                                <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +7
+                                </span>
+                            </div>
+                            <div class="flex items-baseline gap-2 mt-4">
+                                <span class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">82</span>
+                                <span class="text-slate-400 text-sm font-bold uppercase tracking-widest">puntos</span>
+                            </div>
+                            <div class="mt-5 h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                <div class="h-full bg-blue-700 rounded-full" style="width: 82%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IDPS 2: Clima -->
+                <div class="bg-white border-2 border-slate-200 rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-shadow">
+                    <div class="bg-cyan-700 p-6 md:p-8 text-white flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div class="flex items-center gap-5">
+                            <div class="bg-white/20 p-4 rounded-2xl backdrop-blur-sm shadow-inner">
+                                <i data-lucide="users" class="w-8 h-8 md:w-10 md:h-10"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl md:text-3xl font-black">Clima de convivencia escolar</h3>
+                                <p class="text-white/80 text-base font-semibold mt-1">Indicador General de la Categoría</p>
+                            </div>
+                        </div>
+                        <div class="bg-white/10 p-4 rounded-3xl flex items-center justify-around gap-6 backdrop-blur-md border border-white/30 shadow-lg min-w-[280px]">
+                            <div class="text-center">
+                                <p class="text-xs md:text-sm uppercase font-black text-white/70 tracking-widest mb-1">Puntaje</p>
+                                <p class="text-5xl md:text-6xl font-black leading-none tracking-tighter">75</p>
+                            </div>
+                            <div class="h-16 w-1 bg-white/20 rounded-full"></div>
+                            <div class="text-center flex flex-col justify-center items-center">
+                                <p class="text-xs md:text-sm uppercase font-black text-white/70 tracking-widest mb-2">Evolución</p>
+                                <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +4
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 bg-slate-50/50">
+                        <!-- Dimensiones Clima -->
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors">
+                            <div class="flex justify-between items-start mb-4 min-h-[48px]">
+                                <h4 class="text-base md:text-lg font-bold text-slate-700 pr-4 leading-tight">Ambiente de respeto</h4>
+                                <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +3
+                                </span>
+                            </div>
+                            <div class="flex items-baseline gap-2 mt-4">
+                                <span class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">69</span>
+                                <span class="text-slate-400 text-sm font-bold uppercase tracking-widest">puntos</span>
+                            </div>
+                            <div class="mt-5 h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                <div class="h-full bg-cyan-700 rounded-full" style="width: 69%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors">
+                            <div class="flex justify-between items-start mb-4 min-h-[48px]">
+                                <h4 class="text-base md:text-lg font-bold text-slate-700 pr-4 leading-tight">Ambiente organizado</h4>
+                                <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +4
+                                </span>
+                            </div>
+                            <div class="flex items-baseline gap-2 mt-4">
+                                <span class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">81</span>
+                                <span class="text-slate-400 text-sm font-bold uppercase tracking-widest">puntos</span>
+                            </div>
+                            <div class="mt-5 h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                <div class="h-full bg-cyan-700 rounded-full" style="width: 81%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors">
+                            <div class="flex justify-between items-start mb-4 min-h-[48px]">
+                                <h4 class="text-base md:text-lg font-bold text-slate-700 pr-4 leading-tight">Ambiente seguro</h4>
+                                <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +4
+                                </span>
+                            </div>
+                            <div class="flex items-baseline gap-2 mt-4">
+                                <span class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">74</span>
+                                <span class="text-slate-400 text-sm font-bold uppercase tracking-widest">puntos</span>
+                            </div>
+                            <div class="mt-5 h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                <div class="h-full bg-cyan-700 rounded-full" style="width: 74%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IDPS 3: Participación -->
+                <div class="bg-white border-2 border-slate-200 rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-shadow">
+                    <div class="bg-indigo-700 p-6 md:p-8 text-white flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div class="flex items-center gap-5">
+                            <div class="bg-white/20 p-4 rounded-2xl backdrop-blur-sm shadow-inner">
+                                <i data-lucide="shield-check" class="w-8 h-8 md:w-10 md:h-10"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl md:text-3xl font-black">Participación y formación ciudadana</h3>
+                                <p class="text-white/80 text-base font-semibold mt-1">Indicador General de la Categoría</p>
+                            </div>
+                        </div>
+                        <div class="bg-white/10 p-4 rounded-3xl flex items-center justify-around gap-6 backdrop-blur-md border border-white/30 shadow-lg min-w-[280px]">
+                            <div class="text-center">
+                                <p class="text-xs md:text-sm uppercase font-black text-white/70 tracking-widest mb-1">Puntaje</p>
+                                <p class="text-5xl md:text-6xl font-black leading-none tracking-tighter">83</p>
+                            </div>
+                            <div class="h-16 w-1 bg-white/20 rounded-full"></div>
+                            <div class="text-center flex flex-col justify-center items-center">
+                                <p class="text-xs md:text-sm uppercase font-black text-white/70 tracking-widest mb-2">Evolución</p>
+                                <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +8
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 bg-slate-50/50">
+                        <!-- Dimensiones Participación -->
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors">
+                            <div class="flex justify-between items-start mb-4 min-h-[48px]">
+                                <h4 class="text-base md:text-lg font-bold text-slate-700 pr-4 leading-tight">Participación</h4>
+                                <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +3
+                                </span>
+                            </div>
+                            <div class="flex items-baseline gap-2 mt-4">
+                                <span class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">79</span>
+                                <span class="text-slate-400 text-sm font-bold uppercase tracking-widest">puntos</span>
+                            </div>
+                            <div class="mt-5 h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                <div class="h-full bg-indigo-700 rounded-full" style="width: 79%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors">
+                            <div class="flex justify-between items-start mb-4 min-h-[48px]">
+                                <h4 class="text-base md:text-lg font-bold text-slate-700 pr-4 leading-tight">Vida democrática</h4>
+                                <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +13
+                                </span>
+                            </div>
+                            <div class="flex items-baseline gap-2 mt-4">
+                                <span class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">86</span>
+                                <span class="text-slate-400 text-sm font-bold uppercase tracking-widest">puntos</span>
+                            </div>
+                            <div class="mt-5 h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                <div class="h-full bg-indigo-700 rounded-full" style="width: 86%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors">
+                            <div class="flex justify-between items-start mb-4 min-h-[48px]">
+                                <h4 class="text-base md:text-lg font-bold text-slate-700 pr-4 leading-tight">Sentido de pertenencia</h4>
+                                <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +8
+                                </span>
+                            </div>
+                            <div class="flex items-baseline gap-2 mt-4">
+                                <span class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">84</span>
+                                <span class="text-slate-400 text-sm font-bold uppercase tracking-widest">puntos</span>
+                            </div>
+                            <div class="mt-5 h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                <div class="h-full bg-indigo-700 rounded-full" style="width: 84%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IDPS 4: Hábitos -->
+                <div class="bg-white border-2 border-slate-200 rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-shadow">
+                    <div class="bg-emerald-700 p-6 md:p-8 text-white flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div class="flex items-center gap-5">
+                            <div class="bg-white/20 p-4 rounded-2xl backdrop-blur-sm shadow-inner">
+                                <i data-lucide="heart" class="w-8 h-8 md:w-10 md:h-10"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl md:text-3xl font-black">Hábitos de vida saludable</h3>
+                                <p class="text-white/80 text-base font-semibold mt-1">Indicador General de la Categoría</p>
+                            </div>
+                        </div>
+                        <div class="bg-white/10 p-4 rounded-3xl flex items-center justify-around gap-6 backdrop-blur-md border border-white/30 shadow-lg min-w-[280px]">
+                            <div class="text-center">
+                                <p class="text-xs md:text-sm uppercase font-black text-white/70 tracking-widest mb-1">Puntaje</p>
+                                <p class="text-5xl md:text-6xl font-black leading-none tracking-tighter">73</p>
+                            </div>
+                            <div class="h-16 w-1 bg-white/20 rounded-full"></div>
+                            <div class="text-center flex flex-col justify-center items-center">
+                                <p class="text-xs md:text-sm uppercase font-black text-white/70 tracking-widest mb-2">Evolución</p>
+                                <span class="flex items-center gap-1 text-slate-500 font-bold text-sm md:text-base bg-slate-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="minus" class="w-4 h-4 md:w-5 md:h-5"></i> 0
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 bg-slate-50/50">
+                        <!-- Dimensiones Hábitos -->
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors">
+                            <div class="flex justify-between items-start mb-4 min-h-[48px]">
+                                <h4 class="text-base md:text-lg font-bold text-slate-700 pr-4 leading-tight">Hábitos alimenticios</h4>
+                                <span class="flex items-center gap-1 text-rose-700 font-extrabold text-sm md:text-base bg-rose-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-down-right" class="w-4 h-4 md:w-5 md:h-5"></i> -2
+                                </span>
+                            </div>
+                            <div class="flex items-baseline gap-2 mt-4">
+                                <span class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">72</span>
+                                <span class="text-slate-400 text-sm font-bold uppercase tracking-widest">puntos</span>
+                            </div>
+                            <div class="mt-5 h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                <div class="h-full bg-emerald-700 rounded-full" style="width: 72%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors">
+                            <div class="flex justify-between items-start mb-4 min-h-[48px]">
+                                <h4 class="text-base md:text-lg font-bold text-slate-700 pr-4 leading-tight">Hábitos de vida activa</h4>
+                                <span class="flex items-center gap-1 text-emerald-700 font-extrabold text-sm md:text-base bg-emerald-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-up-right" class="w-4 h-4 md:w-5 md:h-5"></i> +5
+                                </span>
+                            </div>
+                            <div class="flex items-baseline gap-2 mt-4">
+                                <span class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">70</span>
+                                <span class="text-slate-400 text-sm font-bold uppercase tracking-widest">puntos</span>
+                            </div>
+                            <div class="mt-5 h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                <div class="h-full bg-emerald-700 rounded-full" style="width: 70%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors">
+                            <div class="flex justify-between items-start mb-4 min-h-[48px]">
+                                <h4 class="text-base md:text-lg font-bold text-slate-700 pr-4 leading-tight">Hábitos de autocuidado</h4>
+                                <span class="flex items-center gap-1 text-rose-700 font-extrabold text-sm md:text-base bg-rose-100 px-3 py-1 rounded-full shadow-sm">
+                                    <i data-lucide="arrow-down-right" class="w-4 h-4 md:w-5 md:h-5"></i> -2
+                                </span>
+                            </div>
+                            <div class="flex items-baseline gap-2 mt-4">
+                                <span class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">78</span>
+                                <span class="text-slate-400 text-sm font-bold uppercase tracking-widest">puntos</span>
+                            </div>
+                            <div class="mt-5 h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                                <div class="h-full bg-emerald-700 rounded-full" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Resumen Ejecutivo para Reunión -->
+        <section class="bg-slate-900 rounded-[3rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full -mr-48 -mt-48 blur-3xl"></div>
+            <div class="relative z-10">
+                <h3 class="text-3xl font-black mb-8 flex items-center gap-3">
+                    <i data-lucide="check-circle" class="text-blue-400 w-8 h-8"></i>
+                    Puntos Clave para el Análisis Directivo
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                    <div class="space-y-4 bg-white/5 p-6 rounded-3xl border border-white/10">
+                        <p class="text-blue-400 font-black text-base uppercase tracking-widest">Liderazgo Académico</p>
+                        <p class="text-slate-200 text-base md:text-lg leading-relaxed">
+                            El incremento de <strong class="text-white text-xl">+20 puntos</strong> en Lenguaje de 4° Básico es el hito pedagógico del año, validando las estrategias de lectoescritura.
+                        </p>
+                    </div>
+                    <div class="space-y-4 bg-white/5 p-6 rounded-3xl border border-white/10">
+                        <p class="text-blue-400 font-black text-base uppercase tracking-widest">Cultura Escolar</p>
+                        <p class="text-slate-200 text-base md:text-lg leading-relaxed">
+                            La dimensión <strong class="text-white">"Vida Democrática"</strong> <strong class="text-emerald-400 text-xl">(+13 pts)</strong> refleja el éxito del enfoque intercultural y la participación estudiantil.
+                        </p>
+                    </div>
+                    <div class="space-y-4 bg-white/5 p-6 rounded-3xl border border-white/10">
+                        <p class="text-blue-400 font-black text-base uppercase tracking-widest">Desafío 2026</p>
+                        <p class="text-slate-200 text-base md:text-lg leading-relaxed">
+                            Los <strong class="text-white">Hábitos Alimenticios</strong> muestran un leve descenso <strong class="text-rose-400 text-xl">(-2 pts)</strong>, sugiriendo la necesidad de reforzar este aspecto.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="max-w-6xl mx-auto mt-20 pt-8 border-t-2 border-slate-200 text-center">
+        <p class="text-slate-500 text-base font-semibold">
+            Equipo Directivo • Escuela Kallfü Mapu • SIMCE 2025
         </p>
-      </footer>
-    </div>
-  );
-};
+    </footer>
 
-export default App;
+    <!-- Script para inicializar los iconos de Lucide -->
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
