@@ -1,286 +1,294 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Trophy, 
-  Target, 
-  Swords, 
-  Gamepad2, 
-  TrendingUp, 
-  Award, 
-  Skull,
-  User,
-  ChevronRight,
-  Medal,
-  CheckCircle2,
-  AlertCircle,
-  BarChart3
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking Elite - Squad Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #09090b; /* zinc-950 */
+        }
 
-const playerStats = [
-  {
-    name: "Veaader",
-    rank: 1,
-    totalMatches: 1465,
-    totalWins: 440,
-    top10s: 1057,
-    winRate: 30.034,
-    top10Rate: 72.15,
-    totalKills: 5774,
-    kdRatio: 5.633,
-    headshotKills: 1931,
-    headshotRate: 33.443,
-    color: "from-blue-500 to-blue-700",
-    accent: "text-blue-400",
-    analysis: {
-      strengths: "Precisión quirúrgica y letalidad extrema. Su ratio de Headshots (33%) es de nivel profesional, lo que explica su altísimo K/D.",
-      weaknesses: "Muestra un volumen de partidas moderado; el reto será mantener estos promedios conforme aumente su tiempo de juego total."
-    }
-  },
-  {
-    name: "loancorread",
-    rank: 2,
-    totalMatches: 2481,
-    totalWins: 592,
-    top10s: 1689,
-    winRate: 23.861,
-    top10Rate: 68.077,
-    totalKills: 8072,
-    kdRatio: 4.273,
-    headshotKills: 1379,
-    headshotRate: 17.084,
-    color: "from-emerald-500 to-emerald-700",
-    accent: "text-emerald-400",
-    analysis: {
-      strengths: "Impacto masivo en el campo. Es el 'fragger' del grupo con más de 8,000 bajas. Su consistencia en el combate directo es impecable.",
-      weaknesses: "Dependencia del daño al cuerpo. Su porcentaje de headshots es el más bajo del grupo (17%), lo que sugiere un estilo de juego basado en spray."
-    }
-  },
-  {
-    name: "El Diablo",
-    rank: 3,
-    totalMatches: 2565,
-    totalWins: 637,
-    top10s: 1782,
-    winRate: 24.834,
-    top10Rate: 69.474,
-    totalKills: 4790,
-    kdRatio: 2.484,
-    headshotKills: 1014,
-    headshotRate: 21.169,
-    color: "from-red-500 to-red-700",
-    accent: "text-red-400",
-    analysis: {
-      strengths: "Estratega de supervivencia. Tiene el mayor número de victorias y una excelente capacidad para llegar al Top 10 consistentemente.",
-      weaknesses: "Baja eficiencia en duelos 1v1 comparado con los líderes. Su K/D es significativamente menor, lo que indica un juego más pasivo."
-    }
-  },
-  {
-    name: "Beluga",
-    rank: 4,
-    totalMatches: 696,
-    totalWins: 144,
-    top10s: 476,
-    winRate: 20.69,
-    top10Rate: 68.391,
-    totalKills: 1322,
-    kdRatio: 2.395,
-    headshotKills: 278,
-    headshotRate: 21.029,
-    color: "from-zinc-500 to-zinc-700",
-    accent: "text-zinc-400",
-    analysis: {
-      strengths: "Potencial de crecimiento. Mantiene una puntería decente (21%) similar a la de El Diablo, lo que indica buena base mecánica.",
-      weaknesses: "Falta de agresividad y winrate bajo. Es el jugador con menos impacto en victorias finales del equipo hasta el momento."
-    }
-  }
-];
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
 
-const StatCard = ({ label, value, icon: Icon, suffix = "", colorClass = "text-zinc-400" }) => (
-  <div className="bg-zinc-900/50 p-3 rounded-lg border border-zinc-800 flex items-center justify-between group hover:border-white/10 transition-colors">
-    <div className="flex items-center gap-3">
-      <div className={`p-2 rounded bg-zinc-800 ${colorClass}`}>
-        <Icon size={16} />
-      </div>
-      <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">{label}</span>
-    </div>
-    <span className="text-lg font-bold text-white">
-      {typeof value === 'number' && !Number.isInteger(value) ? value.toFixed(2) : value.toLocaleString()}
-      {suffix}
-    </span>
-  </div>
-);
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-const PlayerCard = ({ player }) => {
-  return (
-    <div className="relative group">
-      <div className={`absolute -inset-0.5 bg-gradient-to-r ${player.color} rounded-2xl opacity-10 group-hover:opacity-30 transition duration-500 blur`}></div>
-      
-      <div className="relative bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 flex flex-col h-full transform transition-transform group-hover:-translate-y-1">
-        <div className={`bg-gradient-to-br ${player.color} p-6 relative`}>
-          <div className="absolute top-4 right-4 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center gap-2">
-            <Medal size={14} className="text-yellow-400" />
-            <span className="text-xs font-black text-white">#{player.rank}</span>
-          </div>
-          
-          <div className="flex flex-col">
-            <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase leading-tight">{player.name}</h2>
-            <span className="text-[10px] font-bold text-white/60 uppercase tracking-widest mt-1">Status: Active Duty</span>
-          </div>
-        </div>
+        .glow {
+            filter: blur(40px);
+            opacity: 0.1;
+            transition: opacity 0.5s ease;
+        }
 
-        <div className="px-5 py-4 bg-zinc-900/40 border-b border-zinc-800 flex justify-between items-center">
-            <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-zinc-500 uppercase">K/D Ratio</span>
-                <span className={`text-3xl font-black ${player.accent}`}>{player.kdRatio}</span>
-            </div>
-            <Award size={32} className={`${player.rank === 1 ? 'text-yellow-500' : 'text-zinc-700'} opacity-50`} />
-        </div>
-
-        <div className="p-5 space-y-3 flex-grow">
-          <div className="grid grid-cols-1 gap-2">
-            <StatCard label="Win Rate" value={player.winRate} suffix="%" icon={Trophy} colorClass="text-yellow-500" />
-            <StatCard label="Total Kills" value={player.totalKills} icon={Skull} colorClass="text-zinc-400" />
-            
-            <div className="bg-zinc-900/50 p-3 rounded-lg border border-zinc-800 mt-2">
-              <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center gap-2">
-                  <Target size={14} className="text-red-500" />
-                  <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Puntería HS</span>
+        .group:hover .glow {
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body class="text-white selection:bg-emerald-500">
+    <div class="max-w-7xl mx-auto p-4 md:p-10">
+        <!-- Header Section -->
+        <header class="mb-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+            <div class="border-l-4 border-blue-500 pl-6">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="bg-blue-500/10 px-3 py-1 rounded text-blue-400 text-[10px] font-black uppercase tracking-widest border border-blue-500/20">
+                        Análisis de Rendimiento
+                    </div>
                 </div>
-                <span className="text-sm font-bold text-white">{player.headshotRate}%</span>
-              </div>
-              <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full bg-gradient-to-r ${player.color} transition-all duration-1000`} 
-                  style={{ width: `${player.headshotRate}%` }}
-                ></div>
-              </div>
+                <h1 class="text-5xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">
+                    The <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Squad</span> Report
+                </h1>
             </div>
-          </div>
-        </div>
-
-        <div className="p-4 bg-zinc-900/20 border-t border-zinc-900 flex justify-between items-center">
-          <div className="flex flex-col text-center w-1/2 border-r border-zinc-800">
-            <span className="text-[9px] text-zinc-600 uppercase font-bold">Matches</span>
-            <span className="text-xs font-bold text-zinc-400">{player.totalMatches.toLocaleString()}</span>
-          </div>
-          <div className="flex flex-col text-center w-1/2">
-            <span className="text-[9px] text-zinc-600 uppercase font-bold">Top 10s</span>
-            <span className="text-xs font-bold text-zinc-400">{player.top10s.toLocaleString()}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const App = () => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
-  return (
-    <div className="min-h-screen bg-zinc-950 text-white p-4 md:p-10 font-sans selection:bg-emerald-500">
-      <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <header className="mb-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-          <div className="border-l-4 border-blue-500 pl-6">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="bg-blue-500/10 px-3 py-1 rounded text-blue-400 text-[10px] font-black uppercase tracking-widest border border-blue-500/20">
-                Análisis de Rendimiento
-              </div>
+            <div class="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800 flex items-center gap-6">
+                <div class="text-center">
+                    <p class="text-[10px] text-zinc-500 uppercase font-bold mb-1">Squad Avg K/D</p>
+                    <p class="text-2xl font-black text-white">3.69</p>
+                </div>
+                <div class="w-[1px] h-10 bg-zinc-800"></div>
+                <div class="text-center">
+                    <p class="text-[10px] text-zinc-500 uppercase font-bold mb-1">Total Wins</p>
+                    <p class="text-2xl font-black text-emerald-400">2,013</p>
+                </div>
             </div>
-            <h1 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">
-              The <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Squad</span> Report
-            </h1>
-          </div>
-          <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800 flex items-center gap-6">
-            <div className="text-center">
-                <p className="text-[10px] text-zinc-500 uppercase font-bold mb-1">Squad Avg K/D</p>
-                <p className="text-2xl font-black text-white">3.69</p>
-            </div>
-            <div className="w-[1px] h-10 bg-zinc-800"></div>
-            <div className="text-center">
-                <p className="text-[10px] text-zinc-500 uppercase font-bold mb-1">Total Wins</p>
-                <p className="text-2xl font-black text-emerald-400">2,013</p>
-            </div>
-          </div>
         </header>
 
-        {/* Players Cards Grid */}
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20 transition-all duration-1000 transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          {playerStats.map((player) => (
-            <PlayerCard key={player.name} player={player} />
-          ))}
+        <!-- Players Cards Grid -->
+        <div id="player-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20 fade-in">
+            <!-- Cards will be injected here via JS -->
         </div>
 
-        {/* Detailed Technical Analysis Section */}
-        <section className="mt-24">
-            <div className="flex items-center gap-4 mb-10">
-                <BarChart3 className="text-blue-500" size={28} />
-                <h2 className="text-3xl font-black uppercase italic tracking-tight">Auditoría Técnica por Jugador</h2>
-                <div className="h-[1px] flex-grow bg-zinc-800 ml-4"></div>
+        <!-- Detailed Technical Analysis Section -->
+        <section class="mt-24 fade-in" id="analysis-section">
+            <div class="flex items-center gap-4 mb-10">
+                <i data-lucide="bar-chart-3" class="text-blue-500"></i>
+                <h2 class="text-3xl font-black uppercase italic tracking-tight">Auditoría Técnica por Jugador</h2>
+                <div class="h-[1px] flex-grow bg-zinc-800 ml-4"></div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {playerStats.map((player) => (
-                    <div key={`analysis-${player.name}`} className="bg-zinc-900/30 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 transition-all group">
-                        <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-4">
-                                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${player.color} flex items-center justify-center font-black text-white shadow-lg shadow-black/50`}>
-                                    {player.rank}
-                                </div>
-                                <h3 className="text-xl font-bold uppercase italic tracking-tighter text-white group-hover:text-blue-400 transition-colors">
-                                    {player.name}
-                                </h3>
-                            </div>
-                            <span className="text-[10px] font-black text-zinc-600 uppercase bg-zinc-800 px-3 py-1 rounded">Reporte ID: 0{player.rank}</span>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div className="bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/50">
-                                <div className="flex items-center gap-2 mb-2 text-emerald-400">
-                                    <CheckCircle2 size={16} />
-                                    <span className="text-xs font-black uppercase tracking-widest">Fortalezas</span>
-                                </div>
-                                <p className="text-sm text-zinc-400 leading-relaxed italic">
-                                    {player.analysis.strengths}
-                                </p>
-                            </div>
-
-                            <div className="bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/50">
-                                <div className="flex items-center gap-2 mb-2 text-red-400">
-                                    <AlertCircle size={16} />
-                                    <span className="text-xs font-black uppercase tracking-widest">Debilidades</span>
-                                </div>
-                                <p className="text-sm text-zinc-400 leading-relaxed italic">
-                                    {player.analysis.weaknesses}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="mt-6 pt-4 border-t border-zinc-800/50 flex gap-4">
-                            <div className="px-3 py-1 bg-zinc-900 rounded text-[9px] font-bold text-zinc-500 uppercase tracking-tighter">
-                                Focus: {player.rank < 3 ? 'Competitive Elite' : 'Strategic Support'}
-                            </div>
-                            <div className="px-3 py-1 bg-zinc-900 rounded text-[9px] font-bold text-zinc-500 uppercase tracking-tighter">
-                                Skill Tier: {['S+', 'S', 'A', 'B'][player.rank - 1]}
-                            </div>
-                        </div>
-                    </div>
-                ))}
+            <div id="analysis-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Analysis will be injected here via JS -->
             </div>
         </section>
 
-        <footer className="mt-32 pb-10 text-center">
-            <p className="text-zinc-600 text-[10px] uppercase font-black tracking-[0.4em]">
+        <footer class="mt-32 pb-10 text-center">
+            <p class="text-zinc-600 text-[10px] uppercase font-black tracking-[0.4em]">
                 System Analytics — Odyssey G5 Optimized
             </p>
         </footer>
-      </div>
     </div>
-  );
-};
 
-export default App;
+    <script>
+        const playerStats = [
+            {
+                name: "Veaader",
+                rank: 1,
+                totalMatches: 1465,
+                totalWins: 440,
+                top10s: 1057,
+                winRate: 30.034,
+                top10Rate: 72.15,
+                totalKills: 5774,
+                kdRatio: 5.633,
+                headshotKills: 1931,
+                headshotRate: 33.443,
+                color: "from-blue-500 to-blue-700",
+                accent: "text-blue-400",
+                analysis: {
+                    strengths: "Precisión quirúrgica y letalidad extrema. Su ratio de Headshots (33%) es de nivel profesional, lo que explica su altísimo K/D.",
+                    weaknesses: "Muestra un volumen de partidas moderado; el reto será mantener estos promedios conforme aumente su tiempo de juego total."
+                }
+            },
+            {
+                name: "loancorread",
+                rank: 2,
+                totalMatches: 2481,
+                totalWins: 592,
+                top10s: 1689,
+                winRate: 23.861,
+                top10Rate: 68.077,
+                totalKills: 8072,
+                kdRatio: 4.273,
+                headshotKills: 1379,
+                headshotRate: 17.084,
+                color: "from-emerald-500 to-emerald-700",
+                accent: "text-emerald-400",
+                analysis: {
+                    strengths: "Impacto masivo en el campo. Es el 'fragger' del grupo con más de 8,000 bajas. Su consistencia en el combate directo es impecable.",
+                    weaknesses: "Dependencia del daño al cuerpo. Su porcentaje de headshots es el más bajo del grupo (17%), lo que sugiere un estilo de juego basado en spray."
+                }
+            },
+            {
+                name: "El Diablo",
+                rank: 3,
+                totalMatches: 2565,
+                totalWins: 637,
+                top10s: 1782,
+                winRate: 24.834,
+                top10Rate: 69.474,
+                totalKills: 4790,
+                kdRatio: 2.484,
+                headshotKills: 1014,
+                headshotRate: 21.169,
+                color: "from-red-500 to-red-700",
+                accent: "text-red-400",
+                analysis: {
+                    strengths: "Estratega de supervivencia. Tiene el mayor número de victorias y una excelente capacidad para llegar al Top 10 consistentemente.",
+                    weaknesses: "Baja eficiencia en duelos 1v1 comparado con los líderes. Su K/D es significativamente menor, lo que indica un juego más pasivo."
+                }
+            },
+            {
+                name: "Beluga",
+                rank: 4,
+                totalMatches: 696,
+                totalWins: 144,
+                top10s: 476,
+                winRate: 20.69,
+                top10Rate: 68.391,
+                totalKills: 1322,
+                kdRatio: 2.395,
+                headshotKills: 278,
+                headshotRate: 21.029,
+                color: "from-zinc-500 to-zinc-700",
+                accent: "text-zinc-400",
+                analysis: {
+                    strengths: "Potencial de crecimiento. Mantiene una puntería decente (21%) similar a la de El Diablo, lo que indica buena base mecánica.",
+                    weaknesses: "Falta de agresividad y winrate bajo. Es el jugador con menos impacto en victorias finales del equipo hasta el momento."
+                }
+            }
+        ];
+
+        function renderDashboard() {
+            const grid = document.getElementById('player-grid');
+            const analysisGrid = document.getElementById('analysis-grid');
+
+            playerStats.forEach(player => {
+                // Render Cards
+                const card = document.createElement('div');
+                card.className = 'relative group';
+                card.innerHTML = `
+                    <div class="absolute -inset-0.5 bg-gradient-to-r ${player.color} rounded-2xl glow"></div>
+                    <div class="relative bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 flex flex-col h-full transform transition-transform group-hover:-translate-y-1">
+                        <div class="bg-gradient-to-br ${player.color} p-6 relative">
+                            <div class="absolute top-4 right-4 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center gap-2">
+                                <i data-lucide="medal" class="text-yellow-400 w-3.5 h-3.5"></i>
+                                <span class="text-xs font-black text-white">#${player.rank}</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <h2 class="text-2xl font-black text-white italic tracking-tighter uppercase leading-tight">${player.name}</h2>
+                                <span class="text-[10px] font-bold text-white/60 uppercase tracking-widest mt-1">Status: Active Duty</span>
+                            </div>
+                        </div>
+                        <div class="px-5 py-4 bg-zinc-900/40 border-b border-zinc-800 flex justify-between items-center">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-bold text-zinc-500 uppercase">K/D Ratio</span>
+                                <span class="text-3xl font-black ${player.accent}">${player.kdRatio}</span>
+                            </div>
+                            <i data-lucide="award" class="w-8 h-8 ${player.rank === 1 ? 'text-yellow-500' : 'text-zinc-700'} opacity-50"></i>
+                        </div>
+                        <div class="p-5 space-y-3 flex-grow">
+                            <div class="bg-zinc-900/50 p-3 rounded-lg border border-zinc-800 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 rounded bg-zinc-800 text-yellow-500"><i data-lucide="trophy" class="w-4 h-4"></i></div>
+                                    <span class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Win Rate</span>
+                                </div>
+                                <span class="text-lg font-bold text-white">${player.winRate.toFixed(2)}%</span>
+                            </div>
+                            <div class="bg-zinc-900/50 p-3 rounded-lg border border-zinc-800 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 rounded bg-zinc-800 text-zinc-400"><i data-lucide="skull" class="w-4 h-4"></i></div>
+                                    <span class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Total Kills</span>
+                                </div>
+                                <span class="text-lg font-bold text-white">${player.totalKills.toLocaleString()}</span>
+                            </div>
+                            <div class="bg-zinc-900/50 p-3 rounded-lg border border-zinc-800 mt-2">
+                                <div class="flex justify-between items-center mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="target" class="text-red-500 w-3.5 h-3.5"></i>
+                                        <span class="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Puntería HS</span>
+                                    </div>
+                                    <span class="text-sm font-bold text-white">${player.headshotRate.toFixed(2)}%</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r ${player.color}" style="width: ${player.headshotRate}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-zinc-900/20 border-t border-zinc-900 flex justify-between items-center text-center">
+                            <div class="w-1/2 border-r border-zinc-800">
+                                <span class="text-[9px] text-zinc-600 uppercase font-bold block">Matches</span>
+                                <span class="text-xs font-bold text-zinc-400">${player.totalMatches.toLocaleString()}</span>
+                            </div>
+                            <div class="w-1/2">
+                                <span class="text-[9px] text-zinc-600 uppercase font-bold block">Top 10s</span>
+                                <span class="text-xs font-bold text-zinc-400">${player.top10s.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+
+                // Render Analysis
+                const analysisCard = document.createElement('div');
+                analysisCard.className = 'bg-zinc-900/30 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 transition-all group';
+                analysisCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${player.color} flex items-center justify-center font-black text-white shadow-lg shadow-black/50">
+                                ${player.rank}
+                            </div>
+                            <h3 class="text-xl font-bold uppercase italic tracking-tighter text-white group-hover:text-blue-400 transition-colors">
+                                ${player.name}
+                            </h3>
+                        </div>
+                        <span class="text-[10px] font-black text-zinc-600 uppercase bg-zinc-800 px-3 py-1 rounded">Reporte ID: 0${player.rank}</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/50">
+                            <div class="flex items-center gap-2 mb-2 text-emerald-400">
+                                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                                <span class="text-xs font-black uppercase tracking-widest">Fortalezas</span>
+                            </div>
+                            <p class="text-sm text-zinc-400 leading-relaxed italic">${player.analysis.strengths}</p>
+                        </div>
+                        <div class="bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/50">
+                            <div class="flex items-center gap-2 mb-2 text-red-400">
+                                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                                <span class="text-xs font-black uppercase tracking-widest">Debilidades</span>
+                            </div>
+                            <p class="text-sm text-zinc-400 leading-relaxed italic">${player.analysis.weaknesses}</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-zinc-800/50 flex gap-4">
+                        <div class="px-3 py-1 bg-zinc-900 rounded text-[9px] font-bold text-zinc-500 uppercase tracking-tighter">
+                            Skill Tier: ${['S+', 'S', 'A', 'B'][player.rank - 1]}
+                        </div>
+                    </div>
+                `;
+                analysisGrid.appendChild(analysisCard);
+            });
+
+            // Re-initialize Lucide icons
+            lucide.createIcons();
+
+            // Trigger animations
+            setTimeout(() => {
+                document.getElementById('player-grid').classList.add('visible');
+                document.getElementById('analysis-section').classList.add('visible');
+            }, 100);
+        }
+
+        window.onload = renderDashboard;
+    </script>
+</body>
+</html>
