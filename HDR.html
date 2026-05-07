@@ -36,7 +36,7 @@
             }
             @page {
                 size: letter;
-                margin: 1.5cm;
+                margin: 0;
             }
         }
 
@@ -47,10 +47,10 @@
         }
     </style>
 </head>
-<body class="text-gray-900 py-8">
+<body class="text-gray-900 py-8 text-sm sm:text-base">
 
     <!-- Botón para descargar PDF (se oculta en el documento final) -->
-    <div class="max-w-[8.5in] mx-auto mb-4 flex justify-end no-print px-4">
+    <div class="w-[8.5in] max-w-full mx-auto mb-4 flex justify-end no-print px-4">
         <button onclick="descargarPDF()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-200 flex items-center gap-2">
             <!-- Icono de descarga -->
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -62,63 +62,63 @@
         </button>
     </div>
 
-    <!-- Contenedor principal de la hoja (Carta) -->
-    <div class="print-container max-w-[8.5in] mx-auto bg-white p-10 lg:p-12 shadow-xl rounded-sm border border-gray-200" id="documento-pdf">
+    <!-- Contenedor principal de la hoja (Medida estricta Carta) -->
+    <div class="print-container w-[8.5in] h-[11in] max-w-full mx-auto bg-white p-8 sm:p-10 shadow-xl rounded-sm border border-gray-200 relative flex flex-col" id="documento-pdf">
         
         <!-- Encabezado -->
         <div class="text-right mb-2">
-            <p class="text-sm font-semibold tracking-wide text-gray-600 uppercase">Ensayo SIMCE Lenguaje 4º Básico</p>
+            <p class="text-xs sm:text-sm font-semibold tracking-wide text-gray-600 uppercase">Ensayo SIMCE Lenguaje 4º Básico</p>
         </div>
         
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold tracking-tight mb-1">HOJA DE RESPUESTAS</h1>
-            <div class="h-1 w-24 bg-black mx-auto mt-3"></div>
+        <div class="text-center mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight mb-1">HOJA DE RESPUESTAS</h1>
+            <div class="h-1 w-24 bg-black mx-auto mt-2"></div>
         </div>
 
         <!-- Sección de Datos del Alumno -->
-        <div class="space-y-4 mb-8">
+        <div class="space-y-4 mb-6">
             <div class="flex items-end gap-2">
-                <label class="font-semibold whitespace-nowrap text-lg">Nombre:</label>
-                <div class="flex-grow border-b-2 border-black h-6"></div>
+                <label class="font-semibold whitespace-nowrap">Nombre:</label>
+                <div class="flex-grow border-b-2 border-black h-5"></div>
             </div>
             <div class="flex items-end gap-6">
                 <div class="flex items-end gap-2 flex-grow">
-                    <label class="font-semibold whitespace-nowrap text-lg">Curso:</label>
-                    <div class="flex-grow border-b-2 border-black h-6"></div>
+                    <label class="font-semibold whitespace-nowrap">Curso:</label>
+                    <div class="flex-grow border-b-2 border-black h-5"></div>
                 </div>
                 <div class="flex items-end gap-2 flex-grow">
-                    <label class="font-semibold whitespace-nowrap text-lg">Fecha:</label>
-                    <div class="flex-grow border-b-2 border-black h-6"></div>
+                    <label class="font-semibold whitespace-nowrap">Fecha:</label>
+                    <div class="flex-grow border-b-2 border-black h-5"></div>
                 </div>
             </div>
         </div>
 
         <!-- Instrucciones y Ejemplo -->
-        <div class="bg-gray-50 border-l-4 border-gray-800 p-5 rounded-r-md mb-10 force-bg">
+        <div class="bg-gray-50 border-l-4 border-gray-800 p-4 rounded-r-md mb-6 force-bg text-sm">
             <p class="mb-2">Selecciona una alternativa para cada pregunta, marcando con una <strong>X</strong> el cuadrado que corresponda.</p>
-            <p class="mb-4">Si te equivocas, borra con cuidado y vuelve a marcar.</p>
+            <p class="mb-3">Si te equivocas, borra con cuidado y vuelve a marcar.</p>
             
-            <div class="flex items-center gap-6 bg-white p-3 border border-gray-200 rounded inline-flex">
+            <div class="flex items-center gap-4 bg-white p-2 border border-gray-200 rounded inline-flex">
                 <span class="font-semibold text-gray-500">Ejemplo:</span>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2">
                     <span class="w-6 text-right font-bold">30.</span>
                     <div class="flex gap-2">
-                        <div class="w-8 h-8 border-2 border-gray-400 rounded-sm flex items-center justify-center font-bold text-gray-500">A</div>
-                        <div class="w-8 h-8 border-2 border-black rounded-sm flex items-center justify-center font-bold text-black text-xl leading-none">X</div>
-                        <div class="w-8 h-8 border-2 border-gray-400 rounded-sm flex items-center justify-center font-bold text-gray-500">C</div>
-                        <div class="w-8 h-8 border-2 border-gray-400 rounded-sm flex items-center justify-center font-bold text-gray-500">D</div>
+                        <div class="w-7 h-7 border-2 border-gray-400 rounded-sm flex items-center justify-center font-bold text-gray-500 text-xs">A</div>
+                        <div class="w-7 h-7 border-2 border-black rounded-sm flex items-center justify-center font-bold text-black text-lg leading-none">X</div>
+                        <div class="w-7 h-7 border-2 border-gray-400 rounded-sm flex items-center justify-center font-bold text-gray-500 text-xs">C</div>
+                        <div class="w-7 h-7 border-2 border-gray-400 rounded-sm flex items-center justify-center font-bold text-gray-500 text-xs">D</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="mb-6 border-b-2 border-black pb-2">
-            <h2 class="text-xl font-bold uppercase tracking-wider">Preguntas de Alternativas</h2>
-            <p class="text-sm text-gray-600">Marcar alternativa correcta</p>
+        <div class="mb-4 border-b-2 border-black pb-1">
+            <h2 class="text-lg font-bold uppercase tracking-wider">Preguntas de Alternativas</h2>
+            <p class="text-xs text-gray-600">Marcar alternativa correcta</p>
         </div>
 
         <!-- Grilla de Preguntas (Generada dinámicamente) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-2 mb-12" id="questions-grid">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-1" id="questions-grid">
             <!-- Las preguntas se insertarán aquí con JavaScript -->
         </div>
 
@@ -139,16 +139,17 @@
             columns.forEach(col => {
                 // Crear contenedor de la columna
                 const colDiv = document.createElement('div');
-                colDiv.className = 'flex flex-col space-y-3';
+                // Se redujo el espacio vertical (space-y-2) para evitar el salto de página
+                colDiv.className = 'flex flex-col space-y-[0.45rem]';
 
                 for (let i = col.start; i <= col.end; i++) {
                     // Crear fila de pregunta
                     const rowDiv = document.createElement('div');
-                    rowDiv.className = 'flex items-center gap-3';
+                    rowDiv.className = 'flex items-center gap-2';
 
                     // Número de pregunta
                     const numSpan = document.createElement('span');
-                    numSpan.className = 'w-7 text-right font-bold text-lg';
+                    numSpan.className = 'w-6 text-right font-bold text-sm sm:text-base';
                     numSpan.textContent = `${i}.`;
 
                     // Contenedor de alternativas
@@ -158,7 +159,7 @@
                     // Letras A, B, C, D
                     ['A', 'B', 'C', 'D'].forEach(letter => {
                         const box = document.createElement('div');
-                        box.className = 'w-8 h-8 border-[1.5px] border-black rounded-sm flex items-center justify-center font-semibold text-gray-800 text-sm';
+                        box.className = 'w-7 h-7 sm:w-8 sm:h-8 border-[1.5px] border-black rounded-sm flex items-center justify-center font-semibold text-gray-800 text-xs sm:text-sm';
                         box.textContent = letter;
                         optionsDiv.appendChild(box);
                     });
@@ -176,9 +177,10 @@
         function descargarPDF() {
             const elemento = document.getElementById('documento-pdf');
             
-            // Opciones de configuración para el PDF
+            // Opciones de configuración para el PDF ajustadas
             const opciones = {
-                margin:       0.5, // Margen en pulgadas
+                // Margen en 0: El documento HTML ya tiene `p-10` (padding) que actúa como el borde blanco
+                margin:       0, 
                 filename:     'Hoja_de_Respuestas_SIMCE.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
