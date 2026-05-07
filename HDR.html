@@ -8,13 +8,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Fuente Inter de Google Fonts para un toque moderno y legible -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Librería html2pdf.js para generar el PDF directamente -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" xintegrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6; /* Fondo gris claro solo para visualización web */
         }
         
-        /* Estilos específicos para impresión */
+        /* Estilos específicos para impresión y generación de PDF */
         @media print {
             body {
                 background-color: white;
@@ -37,7 +40,7 @@
             }
         }
 
-        /* Utilidad para forzar que los colores de fondo se impriman */
+        /* Utilidad para forzar que los colores de fondo se impriman en el PDF */
         .force-bg {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
@@ -46,16 +49,21 @@
 </head>
 <body class="text-gray-900 py-8">
 
-    <!-- Botón para imprimir (se oculta al imprimir) -->
+    <!-- Botón para descargar PDF (se oculta en el documento final) -->
     <div class="max-w-[8.5in] mx-auto mb-4 flex justify-end no-print px-4">
-        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-200 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-            Imprimir Documento
+        <button onclick="descargarPDF()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-200 flex items-center gap-2">
+            <!-- Icono de descarga -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Descargar PDF
         </button>
     </div>
 
     <!-- Contenedor principal de la hoja (Carta) -->
-    <div class="print-container max-w-[8.5in] mx-auto bg-white p-10 lg:p-12 shadow-xl rounded-sm border border-gray-200">
+    <div class="print-container max-w-[8.5in] mx-auto bg-white p-10 lg:p-12 shadow-xl rounded-sm border border-gray-200" id="documento-pdf">
         
         <!-- Encabezado -->
         <div class="text-right mb-2">
@@ -116,7 +124,7 @@
 
     </div>
 
-    <!-- Script para generar las alternativas automáticamente -->
+    <!-- Script para generar las alternativas y el PDF -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const gridContainer = document.getElementById('questions-grid');
@@ -163,6 +171,23 @@
                 gridContainer.appendChild(colDiv);
             });
         });
+
+        // Función para generar y descargar el PDF
+        function descargarPDF() {
+            const elemento = document.getElementById('documento-pdf');
+            
+            // Opciones de configuración para el PDF
+            const opciones = {
+                margin:       0.5, // Margen en pulgadas
+                filename:     'Hoja_de_Respuestas_SIMCE.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            // Generar y guardar el PDF
+            html2pdf().set(opciones).from(elemento).save();
+        }
     </script>
 
 </body>
