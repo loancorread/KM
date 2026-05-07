@@ -47,15 +47,15 @@
 <body class="text-gray-900 py-8">
 
     <!-- Botón para imprimir (se oculta al imprimir) -->
-    <div class="max-w-4xl mx-auto mb-4 flex justify-end no-print px-4">
+    <div class="max-w-[8.5in] mx-auto mb-4 flex justify-end no-print px-4">
         <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-200 flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
             Imprimir Documento
         </button>
     </div>
 
-    <!-- Contenedor principal de la hoja (A4 / Carta) -->
-    <div class="print-container max-w-4xl mx-auto bg-white p-10 lg:p-12 shadow-xl rounded-sm border border-gray-200">
+    <!-- Contenedor principal de la hoja (Carta) -->
+    <div class="print-container max-w-[8.5in] mx-auto bg-white p-10 lg:p-12 shadow-xl rounded-sm border border-gray-200">
         
         <!-- Encabezado -->
         <div class="text-right mb-2">
@@ -112,15 +112,6 @@
         <!-- Grilla de Preguntas (Generada dinámicamente) -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-2 mb-12" id="questions-grid">
             <!-- Las preguntas se insertarán aquí con JavaScript -->
-        </div>
-
-        <!-- Sección de Desarrollo -->
-        <div class="border-t-2 border-black pt-6">
-            <h2 class="text-xl font-bold uppercase tracking-wider mb-2">Pregunta de Desarrollo</h2>
-            <p class="text-sm text-gray-600 mb-4">Las preguntas de desarrollo deben ser respondidas en el recuadro que se indica a continuación.</p>
-            <div class="w-full h-48 border-2 border-gray-400 rounded-md bg-white p-4">
-                <!-- Espacio para escribir -->
-            </div>
         </div>
 
     </div>
